@@ -5,47 +5,67 @@
 //  Created by 성민경 on 2017. 11. 27..
 //  Copyright © 2017년 성민경. All rights reserved.
 //
+// 1019
+// 책 페이지 개수 세기
 
-// 1914
-// 하노이탑
 
 #include <iostream>
+#include<vector>
 
 using namespace std;
 
 
-void hanoi(string *arr, int n, int from, int by, int to, int* cnt){
+// 일의 자리수 세기
+string solve(int page, int comp){
     
-    if(n == 1){
-        arr->append(to_string(from) + " " + to_string(to) + '\n');
-        (*cnt)++;
+    int cnt = 0, now;
+    vector<int> arr;
+    int i=0, tmp = 0;
+    
+    for(now = 1; now <= page; ++now, i++){
         
-    }
-    else{
-        //(*cnt)++;
-        hanoi(arr, n-1, from, to, by, cnt);
+        tmp = now;
         
-        arr->append(to_string(from) + " " + to_string(to)+ '\n');
-        //cout << from << ' ' << by << '\n';
-        (*cnt)++;
-        hanoi(arr, n-1, by, from , to, cnt);
+        //만약 두자리 수 이상이면 한자리수로 변환
+        while(tmp/10 != 0){
+            arr.push_back(tmp%10);
+            tmp = tmp/10;
+        }
+        arr.push_back(tmp);
+        
+        for(auto it = arr.begin(); it != arr.end(); ++it){
+            
+            if(*it == comp){
+                cnt++;
+            }
+        }
+        
+        arr.clear();
     }
     
+    return to_string(cnt);
 }
 
-int main(int argc, const char * argv[]) {
-    int n, cnt = 0;
-    string arr;
+
+
+int main(){
+    
+    int n;
     
     cin >> n;
     
-    hanoi(&arr, n, 1, 2, 3, &cnt);
-    
-    cout << cnt << '\n';
-    
-    cout << arr;
-    
+    for(int i=0; i<=9; i++){
+        cout << solve(n, i);
+        cout << " ";
+    }
     
     return 0;
 }
+
+
+
+
+
+
+
 
