@@ -5,59 +5,59 @@
 //  Created by 성민경 on 2017. 11. 27..
 //  Copyright © 2017년 성민경. All rights reserved.
 //
-// 1019
-// 책 페이지 개수 세기
+// 1662
+// 압축
 
 
 #include <iostream>
-#include<vector>
+#include <vector>
+#include <queue>
+#include <string>
 
 using namespace std;
 
 
-// 일의 자리수 세기
-string solve(int page, int comp){
+string compress(string input){
     
-    int cnt = 0, now;
-    vector<int> arr;
-    int i=0, tmp = 0;
+    int check = 0, tmp =0, lenght=0;
+    string str = NULL, tmps;
+    auto it = input.end()-1;
     
-    for(now = 1; now <= page; ++now, i++){
+    for(lenght =0; lenght < input.size(); lenght++, --it){
         
-        tmp = now;
-        
-        //만약 두자리 수 이상이면 한자리수로 변환
-        while(tmp/10 != 0){
-            arr.push_back(tmp%10);
-            tmp = tmp/10;
-        }
-        arr.push_back(tmp);
-        
-        for(auto it = arr.begin(); it != arr.end(); ++it){
+        if(*it == ')'){ }
+        else if(*it == '('){
             
-            if(*it == comp){
-                cnt++;
+            if(check == 1){
+                it--;
+                lenght++;
+                tmp = atoi(&*it); // string to int
+                tmps = str; // 추가해줄 문자열
+                for(int i=1; i<tmp; ++i){ // 반복
+                    str += tmps;
+                }
+                check = 0;
             }
         }
-        
-        arr.clear();
+        else {
+            check = 1;
+            str += *it;
+        }
     }
-    
-    return to_string(cnt);
+    return str;
 }
 
 
 
 int main(){
+
+    string input, str;
     
-    int n;
+    cin >> input;
     
-    cin >> n;
+    str = compress(input);
     
-    for(int i=0; i<=9; i++){
-        cout << solve(n, i);
-        cout << " ";
-    }
+    cout << str.size() ;
     
     return 0;
 }
