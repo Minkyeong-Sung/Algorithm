@@ -10,54 +10,37 @@
 
 
 #include <iostream>
-#include <vector>
-#include <queue>
-#include <string>
 
 using namespace std;
 
 
-string compress(string input){
-    
-    int check = 0, tmp =0, lenght=0;
-    string str = NULL, tmps;
-    auto it = input.end()-1;
-    
-    for(lenght =0; lenght < input.size(); lenght++, --it){
-        
-        if(*it == ')'){ }
-        else if(*it == '('){
-            
-            if(check == 1){
-                it--;
-                lenght++;
-                tmp = atoi(&*it); // string to int
-                tmps = str; // 추가해줄 문자열
-                for(int i=1; i<tmp; ++i){ // 반복
-                    str += tmps;
-                }
-                check = 0;
-            }
-        }
-        else {
-            check = 1;
-            str += *it;
-        }
-    }
-    return str;
-}
+int gcd(int a, int b){
 
+    int tmp;
+    
+    while(b != 0){
+    
+        tmp = a % b;
+        a = b;
+        b = tmp;
+    }
+    
+    return a;
+}
 
 
 int main(){
 
-    string input, str;
+    int a, b, g,l;
+
     
-    cin >> input;
+    cin >> a >> b;
     
-    str = compress(input);
+    g = gcd(a,b);
+    l = a*b / g;
     
-    cout << str.size() ;
+    cout << g<< '\n' << l;
+    
     
     return 0;
 }
