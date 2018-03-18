@@ -9,43 +9,44 @@
 // 압축
 
 
-#include <iostream>
+#include <cstdio>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
+bool cmp(const pair<int, int> &u, const pair<int, int> &v){
 
-int gcd(int a, int b){
+    if(u.second == v.second) return u.first < v.first;
+    else return u.second < v.second; // 오름차순
 
-    int tmp;
-    
-    while(b != 0){
-    
-        tmp = a % b;
-        a = b;
-        b = tmp;
-    }
-    
-    return a;
+
+    return true;
 }
 
 
 int main(){
 
-    int a, b, g,l;
-
+    int n;
     
-    cin >> a >> b;
+    scanf("%d", &n);
     
-    g = gcd(a,b);
-    l = a*b / g;
+    vector<pair<int, int>> arr(n);
     
-    cout << g<< '\n' << l;
+    for(int i=0; i<n; i++){
+        scanf("%d %d", &arr[i].first, &arr[i].second);
+    }
+    
+    sort(arr.begin(), arr.end(), cmp);
+    
+    for(int i=0; i< arr.size() ; i++){
+        printf("%d %d\n", arr[i].first, arr[i].second );
+    }
+    
     
     
     return 0;
 }
-
-
 
 
 
