@@ -9,19 +9,38 @@
 // 압축
 
 
-#include <cstdio>
+#include <iostream>
 #include <vector>
+#include <stack>
 #include <algorithm>
 
 using namespace std;
 
-bool cmp(const pair<int, int> &u, const pair<int, int> &v){
 
-    if(u.second == v.second) return u.first < v.first;
-    else return u.second < v.second; // 오름차순
+string CheckPS(string s){
 
-
-    return true;
+    int num = 0;
+    
+    for(int i=0; i< s.size(); i++){
+    
+        if(s[i] == '('){
+            num ++;
+        }
+        else{
+            num--;
+        }
+        
+        if(num < 0){
+            return "NO";
+        }
+    }
+    
+    if(num == 0){
+        return "YES";
+    }
+    else{
+        return "NO";
+    }
 }
 
 
@@ -29,22 +48,18 @@ int main(){
 
     int n;
     
-    scanf("%d", &n);
-    
-    vector<pair<int, int>> arr(n);
-    
+    cin >> n;
+   
     for(int i=0; i<n; i++){
-        scanf("%d %d", &arr[i].first, &arr[i].second);
+        
+        string str;
+        
+        cin >> str;
+        
+        cout << CheckPS(str) << '\n';
+        
     }
-    
-    sort(arr.begin(), arr.end(), cmp);
-    
-    for(int i=0; i< arr.size() ; i++){
-        printf("%d %d\n", arr[i].first, arr[i].second );
-    }
-    
-    
-    
+
     return 0;
 }
 
