@@ -10,8 +10,7 @@
 
 
 #include <iostream>
-#include <vector>
-#include <stack>
+#include <queue>
 #include <algorithm>
 
 using namespace std;
@@ -19,67 +18,38 @@ using namespace std;
 
 int main(){
 
-    int n, cnt;
-    string tmp;
-    char ch;
+    queue<int> q;
+    int n, m;
     
-    stack<char> left, right;
     
-    cin >> tmp ;
-    cnt = tmp.size();
-    for(int i=0; i<cnt; i++){
-        left.push(tmp[i]);
+    cin >> n >> m;
+    
+    for(int i=1; i<=n; i++){
+        q.push(i);
     }
     
-    cin >> n;
     
-    for(int i=0; i<n; i++){
+    cout << '<';
+    
+    while(n--){
+        for(int i=0; i<m-1; i++){
+            q.push(q.front());
+            q.pop();
+        }
+    
+        cout << q.front();
         
-        cin >> ch;
+        if(n!=0){
+        cout << ", ";
+        }
         
-        if(ch == 'L'){ // 왼쪽으로 커서 이동
-            
-            if(!left.empty()){ // 비어있는 경우 대비
-                right.push(left.top());
-                left.pop();
-            }
-        }
-        else if(ch == 'D'){ // 오른쪽으로 커서 이동
-            
-            if(!right.empty()){
-                left.push(right.top());
-                right.pop();
-            }
-            
-        }else if(ch == 'B'){ // 왼쪽에 있는 문자 삭제
-            
-            if(!left.empty()){
-                left.pop();
-            }
-        }
-        else{ // P $ ; $라는 문자를 왼쪽에 추가
-            
-            char addChar;
-            
-            cin >> addChar;
-            
-            left.push(addChar);
-        }
+        q.pop();
     }
-
-    while (!left.empty()) {
-        right.push(left.top());
-        left.pop();
-    }
-    while(!right.empty()){
-        cout << right.top();
-        right.pop();
-    }
+    
+    cout << '>';
     
     
     return 0;
-    
-
 }
 
 
