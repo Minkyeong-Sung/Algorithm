@@ -17,50 +17,69 @@
 using namespace std;
 
 
-string CheckPS(string s){
-
-    int num = 0;
-    
-    for(int i=0; i< s.size(); i++){
-    
-        if(s[i] == '('){
-            num ++;
-        }
-        else{
-            num--;
-        }
-        
-        if(num < 0){
-            return "NO";
-        }
-    }
-    
-    if(num == 0){
-        return "YES";
-    }
-    else{
-        return "NO";
-    }
-}
-
-
 int main(){
 
-    int n;
+    int n, cnt;
+    string tmp;
+    char ch;
+    
+    stack<char> left, right;
+    
+    cin >> tmp ;
+    cnt = tmp.size();
+    for(int i=0; i<cnt; i++){
+        left.push(tmp[i]);
+    }
     
     cin >> n;
-   
+    
     for(int i=0; i<n; i++){
         
-        string str;
+        cin >> ch;
         
-        cin >> str;
-        
-        cout << CheckPS(str) << '\n';
-        
+        if(ch == 'L'){ // 왼쪽으로 커서 이동
+            
+            if(!left.empty()){ // 비어있는 경우 대비
+                right.push(left.top());
+                left.pop();
+            }
+        }
+        else if(ch == 'D'){ // 오른쪽으로 커서 이동
+            
+            if(!right.empty()){
+                left.push(right.top());
+                right.pop();
+            }
+            
+        }else if(ch == 'B'){ // 왼쪽에 있는 문자 삭제
+            
+            if(!left.empty()){
+                left.pop();
+            }
+        }
+        else{ // P $ ; $라는 문자를 왼쪽에 추가
+            
+            char addChar;
+            
+            cin >> addChar;
+            
+            left.push(addChar);
+        }
     }
 
+    while (!left.empty()) {
+        right.push(left.top());
+        left.pop();
+    }
+    while(!right.empty()){
+        cout << right.top();
+        right.pop();
+    }
+    
+    
     return 0;
+    
+
 }
 
 
