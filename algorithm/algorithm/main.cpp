@@ -10,7 +10,6 @@
 
 
 #include <iostream>
-#include <queue>
 #include <algorithm>
 
 using namespace std;
@@ -18,37 +17,32 @@ using namespace std;
 
 int main(){
 
-    queue<int> q;
-    int n, m;
+    string str;
     
     
-    cin >> n >> m;
+    while(getline(cin, str)){
     
-    for(int i=1; i<=n; i++){
-        q.push(i);
-    }
-    
-    
-    cout << '<';
-    
-    while(n--){
-        for(int i=0; i<m-1; i++){
-            q.push(q.front());
-            q.pop();
-        }
-    
-        cout << q.front();
+        int lower=0, uppper=0, number=0, zero=0;
+        int cnt = str.size();
+        for(int i=0; i< cnt; i++){
         
-        if(n!=0){
-        cout << ", ";
+            if(str[i] >= '0' && str[i] <= '9'){
+                number++;
+            }
+            else if(str[i] >= 'a' && str[i] <= 'z'){
+                lower++;
+            }
+            else if(str[i] >= 'A' && str[i] <= 'Z'){
+                uppper++;
+            }
+            else{
+                zero++;
+            }
         }
         
-        q.pop();
+        cout << lower << ' ' << uppper << ' ' << number <<' ' << zero << '\n';
+    
     }
-    
-    cout << '>';
-    
-    
     return 0;
 }
 
