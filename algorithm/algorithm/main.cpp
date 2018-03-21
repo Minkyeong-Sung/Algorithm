@@ -17,32 +17,19 @@ using namespace std;
 
 int main(){
 
-    string str;
+    int a,b,c,d;
+    
+    cin >> a >> b >> c >> d;
+    
+    string first  = to_string(a) + to_string(b);
+    string second = to_string(c) + to_string(d);
+    
+    long long num1 = stoll(first);
+    long long num2 = stoll(second);
+    
+    cout << num1 + num2;
     
     
-    while(getline(cin, str)){
-    
-        int lower=0, uppper=0, number=0, zero=0;
-        int cnt = str.size();
-        for(int i=0; i< cnt; i++){
-        
-            if(str[i] >= '0' && str[i] <= '9'){
-                number++;
-            }
-            else if(str[i] >= 'a' && str[i] <= 'z'){
-                lower++;
-            }
-            else if(str[i] >= 'A' && str[i] <= 'Z'){
-                uppper++;
-            }
-            else{
-                zero++;
-            }
-        }
-        
-        cout << lower << ' ' << uppper << ' ' << number <<' ' << zero << '\n';
-    
-    }
     return 0;
 }
 
