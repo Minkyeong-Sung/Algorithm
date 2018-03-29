@@ -14,27 +14,41 @@
 
 using namespace std;
 
+
 int main() {
     
-    int n;
+    string input;
+    int cnt = 0;
+    stack<int> st;
     
-    cin >> n;
-    vector<int> p(n+1); // 1개 선택할 경우
-    vector<int> MaxPrice(n+1); //
+    cin >> input;
     
-    // 값 입력
-    for(int i=1; i<=n; i++){
-        cin >> p[i];
-    }
+    int n = input.size();
     
-    for(int i=1 ; i<= n; i++){
-        for(int j=1; j<=i; j++){
-            
-            MaxPrice[i] = max(MaxPrice[i], MaxPrice[i-j] + p[j]);
+    
+    for(int i=0; i<n; i++){
+        
+        // 쇠막대기 시작
+        if(input[i] == '('){
+            st.push(i);
         }
+        else{// ')'
+            // 막대기 자를 때
+            if(st.top() + 1 == i){
+                st.pop();
+                cnt += st.size();
+            } // 안자른다면 1개씩 막대기가 증가함
+            else{
+                st.pop();
+                cnt++;
+            }
+        }
+    
     }
     
-    cout << MaxPrice[n] ;
+    cout << cnt ;
+    
+    
     
     
     return 0;
