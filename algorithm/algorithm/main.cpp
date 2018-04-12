@@ -1,68 +1,89 @@
 #include <cstdio>
-#include <algorithm>
-#include <cstring>
-#include <vector>
 #include <queue>
 
 using namespace std;
 
-int arr[101][101];
-int check[101][101];
-int dist[100][100];
+int arr[1000][1000];
+int check[1000][1000];
 
-int dx[] = {0, 0, -1, 1};
-int dy[] = {1, -1, 0, 0};
+int dx[] = {1, -1, 0, 0};
+int dy[] = {0, 0, 1, -1};
 
+// BFS
 
 int main(){
 
     int n, m;
+    queue<pair<int, int>> q;
     
+   
     scanf("%d %d", &n, &m);
     
-    for(int i=0; i<n; i++){
-        for(int j=0; j<m; j++){
-            scanf("%1d", &arr[i][j]);
+    for(int i=0; i<m; i++){
+        for(int j=0; j<n; j++){
+            scanf("%d", &arr[i][j]);
+            check[i][j] = -1;
+            
+            if(arr[i][j] == 1){
+                q.push(make_pair(i, j));
+                check[i][j] = 0;
+            }
+        
         }
     }
     
-    
-    /* BFS */
-    queue<pair<int, int>> q;
-    // 가장 처음 값 넣음
-    q.push(make_pair(0, 0));
-    check[0][0] = true;
-    dist[0][0] = 1;
-    
+
     while(!q.empty()){
-        
+    
         int x = q.front().first;
         int y = q.front().second;
         
         q.pop();
         
         
-        // dx, dy
         for(int i=0; i<4; i++){
-            
+        
             int tmp_x = dx[i] + x;
             int tmp_y = dy[i] + y;
-        
-            if(0<= tmp_x && tmp_x < n && 0<= tmp_y && tmp_y< m){
+            
+            if(0<= tmp_x && tmp_x < m && 0<= tmp_y && tmp_y < n){
                 
-                if(check[tmp_x][tmp_y] == false && arr[tmp_x][tmp_y] == 1){
+                if( arr[tmp_x][tmp_y] == 0 && check[tmp_x][tmp_y] == -1){
+                    check[tmp_x][tmp_y] = check[x][y] + 1;
                     
                     q.push(make_pair(tmp_x, tmp_y));
-                    dist[tmp_x][tmp_y] = dist[x][y] + 1;
-                    check[tmp_x][tmp_y] = true;
-            
+
                 }
+            }
+        } // for
+    }
+    
+    int max = 0;
+    
+    
+    for(int i=0; i<m; i++){
+        for(int j=0; j<n; j++){
+        
+            if(max < check[i][j]){
+                max = check[i][j];
             }
         }
     }
     
-    printf("%d\n", dist[n-1][m-1]);
     
+    //예외처리, 아예 될 수 없는 경우를 위해 다시 처음부터 검사
+    for(int i=0; i<m; i++){
+        for(int j=0; j<n; j++){
+        
+            if(arr[i][j] == 0 && check[i][j] == -1){
+                max = -1 ;
+            }
+        
+        }
+    }
+    
+    
+    printf("%d\n", max);
     
     
     
@@ -123,8 +144,8 @@ int main(){
  check[next] = true;
  q.push(next);
  }
- }
- }
+ } // for
+ } // while
  
  
  }
