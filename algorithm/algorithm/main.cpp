@@ -2,106 +2,73 @@
 #include <cstring>
 #include <queue>
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 
-int arr[4][8];
-bool check[4];
-int k;
+int arr[11];
+int op[4];
+int maxSum = -1000000000;
+int minSum = 100000000;
 
-void change(int array[], int direct){
 
-    int tmp;
+void dfs(int index, int n, int plus, int minus, int mul, int div, int sum){
     
-    if(direct == 1){
-        // 시계방향
-        tmp = array[7];
+    if(index == n){
         
-        for(int i=7; i>0 ; i--){
-            array[i] = array[i-1];
-        }
-        
-        array[0] = tmp;
-    }
-    else{
-        // 반시계방향
-        tmp = array[0];
-        
-        for(int i=0; i<7; i++){
-            array[i] = array[i+1];
-        }
-        
-        array[7] = tmp;
-    }
-}
-
-
-void Rotate(int num, int direct){
-
-    check[num] = true;
-    
-    // 이웃하는 톱니바퀴 체크
-    if(num+1 < 4 && !check[num+1]){
-        if(arr[num][2] != arr[num+1][6]){
-            Rotate(num+1, -1 * direct);
-        }
+        maxSum = max(maxSum, sum);
+        minSum = min(minSum, sum);
+        return;
     }
     
-    if(num-1 >= 0 && !check[num-1]){
-        if(arr[num][6] != arr[num-1][2]){
-            Rotate(num-1, -1 * direct);
-        }
+    
+    
+    if(plus >0){
+        dfs(index+1, n, plus -1 , minus, mul, div, sum + arr[index]);
+    }
+    
+    if(minus >0){
+        dfs(index+1, n, plus  , minus-1, mul, div, sum - arr[index]);
+    }
+    
+    if(mul >0){
+        dfs(index+1, n, plus  , minus, mul-1, div, sum * arr[index]);
+    }
+    
+    if(div >0){
+        dfs(index+1, n, plus , minus, mul, div-1, sum / arr[index]);
     }
 
-    
-    change(arr[num], direct);
+
+
 
 
 
 }
-
 
 int main(){
+    ios::sync_with_stdio(false);
     
-    // 톱니바퀴 정보
-    for(int i=0; i<4; i++){
-        for(int j=0; j<8; j++){
-            scanf("%1d", &arr[i][j]);
-        }
-    }
     
-    int n, num, dir;
+    int n;
     
-    // 테스트 케이스 입력
     scanf("%d", &n);
     
     for(int i=0; i<n; i++){
-        scanf("%d %d", &num, &dir);
-        
-        memset(check, 0, sizeof(check));
-        
-        Rotate(num-1, dir);
+        scanf("%d", &arr[i]);
     }
     
-    
-    int res = 0;
-    
-    for(int i=0; i<4; i++){
-        
-        int tmp = 1;
-        
-        if(arr[i][0] == 1){
-            for(int j=0; j<i; j++){
-                tmp *= 2;
-            }
-            res += tmp;
-        }
-        
-        
-        
+    for(int j=0; j<4; j++){
+        scanf("%d", &op[j]);
     }
     
-    printf("%d\n", res);
+    dfs(1, n, op[0], op[1], op[2], op[3], arr[0]);
+    
+    printf("%d\n%d", maxSum, minSum);
     
     return 0;
+
 }
+
+
+
