@@ -4,29 +4,45 @@ using namespace std;
 
 int main(){
 
-    long long dp[101] = {0};
-    int n, index=0;
-    
-    cin >> n;
-    
-    
-    dp[1] = 1;
-    dp[2] = 1;
-    dp[3] = 1;
+    int n;
+    int check[1000001];
+    int pn=0;
+    int prime[1000000] ;
     
     
-    for(int i=0; i<n; i++){
-        cin >> index;
+    for(int i = 2; i <= 1000000; i++){
         
-        for(int j=4; j<= index; j++){
+        if(check[i] == false){
             
-            dp[j] = dp[j-2] + dp[j-3];
+            prime[pn++] = i;
+        
+            for(int j= i*i; j<= 1000000; j += i){
+                    check[j] = true;
+            }
+        }
+    }
+    
+    check[2] = true;
+    
+    
+    while(1){
+        cin >> n;
+        
+        if(n==0){
+            break;
         }
         
-        cout << dp[index] << endl;
+        
+        for(int i=1; i< pn; i++){
+            
+            if(check[n-prime[i]] == false){
+                cout << n << " = " << prime[i] <<  " + " << n-prime[i] << '\n';
+                break;
+            }
+            
+        }
         
     }
-
 
 
     return 0;
