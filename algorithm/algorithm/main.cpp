@@ -1,43 +1,79 @@
 #include <iostream>
-#include <algorithm>
+#include <cstdio>
+#include <cstring>
 
 using namespace std;
 
-long long int two[3];
-long long int five[3];
-
-void cntNum(long long int n, int flag){
-
-    long long int tmp_two=0, tmp_five=0;
-    long long int i;
-    
-    for(i=2; i<=n ; i *=2){
-        tmp_two += n/i;
-    }
-    
-    for(i=5; i<= n; i *= 5){
-        tmp_five  += n/i;
-    }
-
-    two[flag] = tmp_two;
-    five[flag] = tmp_five;
-}
+#define wide 100
+#define high 100
 
 int main(){
+    
+    int arr[high][wide] = {0};
+    int max = 0;
+    int sum = 0;
+    int n;
+    
+    for(int k=0; k<10; k++){
+        
+        cin >> n;
+        
+        memset(arr, 0, sizeof(arr));
+        max = 0;
+        sum = 0;
+        
+        // input
+        for(int i=0; i< high; i++){
+            sum = 0;
+            
+            for(int j= 0; j< wide; j++){
+                int input;
+                cin >> input;
+            
+                arr[i][j] = input;
+                
+                sum += input;
+            }
+            
+            // 행
+            if(max < sum){
+                max = sum;
+            }
+        }
+        
+        // 대각선
+        sum = 0;
+        int sum1 = 0;
+        
+        for(int i=0; i<high; i++){
+            sum += arr[i][i];
+            sum1 += arr[i][high-1-i];
+        }
+        
+        
+        if(sum> max){
+            max = sum;
+        }
+        if(sum1 > max){
+            max = sum1;
+        }
+        
+        // 열
+        for(int i=0; i<high; i++){
+            sum = 0;
+            for(int j=0; j<wide; j++){
+                sum += arr[j][i];
+            }
+            
+            if(sum > max){
+                max = sum;
+            }
+        }
+        
+        cout << "#" <<n << ' ' << max << '\n';
+        
+    }
 
-    long long int n, m;
-    
-    cin >> n >> m;
-   
-    //  n! / (m! * (n-m)!)
-    cntNum(n, 0);
-    cntNum(m, 1);
-    cntNum(n-m, 2);
-    
-    long long int ans = min(two[0] - two[1] - two[2], five[0] - five[1] - five[2]);
-    
-    cout << ans ;
-    
-    
     return 0;
+    
 }
