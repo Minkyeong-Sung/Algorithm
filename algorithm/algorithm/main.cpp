@@ -1,79 +1,35 @@
 #include <iostream>
-#include <cstdio>
-#include <cstring>
+
 
 using namespace std;
 
-#define wide 100
-#define high 100
-
 int main(){
+
+    int memo[1000001];
+    int input;
     
-    int arr[high][wide] = {0};
-    int max = 0;
-    int sum = 0;
-    int n;
+    cin >> input;
     
-    for(int k=0; k<10; k++){
+    memo[1] = 0;
+    
+    for(int i=2; i<=input; i++)
+    {
         
-        cin >> n;
+        memo[i] = memo[i-1] + 1;
         
-        memset(arr, 0, sizeof(arr));
-        max = 0;
-        sum = 0;
-        
-        // input
-        for(int i=0; i< high; i++){
-            sum = 0;
+        if(i%2 == 0  && memo[i] > memo[i/2] + 1 ){
             
-            for(int j= 0; j< wide; j++){
-                int input;
-                cin >> input;
+            memo[i] = memo[i/2] + 1;
+        }
+        
+        if(i%3 == 0 && memo[i] > memo[i/3] + 1  ){
             
-                arr[i][j] = input;
-                
-                sum += input;
-            }
-            
-            // 행
-            if(max < sum){
-                max = sum;
-            }
+            memo[i] = memo[i/3] + 1;
         }
-        
-        // 대각선
-        sum = 0;
-        int sum1 = 0;
-        
-        for(int i=0; i<high; i++){
-            sum += arr[i][i];
-            sum1 += arr[i][high-1-i];
-        }
-        
-        
-        if(sum> max){
-            max = sum;
-        }
-        if(sum1 > max){
-            max = sum1;
-        }
-        
-        // 열
-        for(int i=0; i<high; i++){
-            sum = 0;
-            for(int j=0; j<wide; j++){
-                sum += arr[j][i];
-            }
-            
-            if(sum > max){
-                max = sum;
-            }
-        }
-        
-        cout << "#" <<n << ' ' << max << '\n';
-        
     }
+   
+    cout << memo[input];
+    
 
     return 0;
-    
 }
