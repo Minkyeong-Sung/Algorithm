@@ -6,23 +6,30 @@ using namespace std;
 int main(){
 
     int memo[1001];
-    int input;
+    int input, n;
     
-    cin >> input;
+    cin >> n;
     
     memo[0] = 1;
     memo[1] = 1;
-    
-    
-    for(int i=2; i<= input; i++){
+    memo[2] = 2;
+    memo[3] = 4;
+
+    for(int i=0; i<n; i++){
+        
+        cin >> input;
+        
+        for(int j=4; j<= input; j++){
       
-        memo[i] = memo[i-1] + 2*memo[i-2];
-    
-        memo[i] %= 10007;
+            memo[j] = memo[j-1] + memo[j-2] + memo[j-3];
+        
+        }
+        
+        
+        cout << memo[input] <<'\n';
     }
     
     
-    cout << memo[input];
     
 
     return 0;
