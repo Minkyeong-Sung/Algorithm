@@ -1,47 +1,51 @@
 #include <iostream>
+#include <cstdio>
 
 using namespace std;
 
 int main(){
 
-    int n;
-    long long dp[101][101] = {0};
-    long long data[101][101] = {0};
+
+    int n, m, a, b;
+    int data[2001];
+    int dp[2001][2001];
     
-    cin >>n;
+    scanf("%d", &n);
     
     for(int i=1; i<= n; i++){
-        for(int j=1; j<= n; j++){
-            cin>> data[i][j];
+        scanf("%d", &data[i]);
+    }
+    
+    
+    // 길이가 1인경우
+    for(int i=1; i<= n; i++){
+        dp[i][i] = 1;
+    }
+    
+    // 길이가 2인 경우
+    for(int i=1; i<= n-1; i++){
+        if(data[i] == data[i+1]){
+            dp[i][i+1] = 1;
         }
     }
     
-    dp[1][1] = 1;
-    
-    for(int i=1; i<= n; i++){
-        for(int j=1; j<= n; j++){
+    // 길이가 3 이상
+    for(int k=3; k<= n; k++){
+        for(int i = 1; i <= n - k + 1; i++){
+            int j = i + k -1;
             
-            if(data[i][j] != 0){
-            
-                if(j + data[i][j] <= n){
-                    // 오른쪽 이동
-                    dp[i][j + data[i][j]] += dp[i][j];
-                }
-                
-                if(i+ data[i][j] <= n){
-                    // 왼쪽 이동
-                    dp[i+ data[i][j]][j] += dp[i][j];
-                }
+            if(data[i] == data[j] && dp[i+1][j-1] == 1 ){
+                dp[i][j] = 1;
             }
         }
     }
     
-    cout << dp[n][n] ;
+    scanf("%d", &m);
     
-    
-
-
-
+    for(int i=0; i<m; i++){
+        scanf("%d %d", &a, &b);
+        printf("%d\n", dp[a][b]);
+    }
 
     return 0;
 }
