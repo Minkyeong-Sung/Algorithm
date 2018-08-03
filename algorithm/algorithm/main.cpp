@@ -1,82 +1,100 @@
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
 
-// 0 : 북  1 : 동
-// 2 : 남  3 : 서
+// 우 상 좌 하
+int dx[] = {1, 0,-1, 0};
+int dy[] = {0, -1, 0, 1};
 
-int dx[] = {0, -1, 0, 1};
-int dy[] = {-1, 0, 1, 0};
-int changeDir[] = {3, 0, 1, 2};
+int arr[101][101];
+vector<int> vt;
 
-int bx[] = {1, 0, -1, 0};
-int by[] = {0, -1, 0, 1};
-int cnt, ans;
+int cntSqaure(){
 
-int solve(int arr[51][51], int x, int y, int dir, int flag){
+    int ans = 0;
     
-    int tmpX, tmpY;
-    // 청소
-    if(flag == 1){
-        arr[x][y] = 2;
-        ans += 1;
+    for(int i=0; i<100; i++){
+        for(int j=0; j<100; j++){
+        
+            if(arr[i][j] == 1&& arr[i+1][j] == 1 && arr[i][j+1] == 1 && arr[i+1][j+1] ==1){
+                    ans += 1;
+                
+            }
+        }
     }
     
-    tmpX = x + dx[dir];
-    tmpY = y + dy[dir];
+    return ans;
+}
+
+
+void solve(int x , int y, int dir, int g){
+
+    int cnt = 0;
+    arr[x][y] = 1;
     
-    if(cnt > 4){
+    vt.push_back(dir);
+    
+    // 회전
+    while(cnt <= g){
+        int start_x = x;
+        int start_y = y;
         
-        tmpX = x + bx[dir];
-        tmpY = y + by[dir];
-        
-        // 뒤쪽이 벽일 경우
-        if(arr[tmpX][tmpY] == 1){
-            cout << ans;
-            return 0;
+        int len = vt.size();
+    
+        // x 세대만큼 회전!
+        for(int i=0; i< len; i++){
+            int nX = start_x + dx[vt[i]];
+            int nY = start_y + dy[vt[i]];
+            
+            start_x = nX;
+            start_y = nY;
+            
+            arr[start_x][start_y] = 1;
         }
         
-        cnt = 1;
-        return solve(arr, tmpX, tmpY, dir, 0);
-    
+        // 다음 세대수 회전을 위한 값 넣기
+        for(int i= len-1; i>=0; i--){
+            vt.push_back((vt[i]+1) %4);
+        }
+        
+        cnt++;
     }
     
-    
-    // 2-1
-    if(arr[tmpX][tmpY] == 0){
-        cnt = 1;
-        return solve(arr, tmpX, tmpY, changeDir[dir], 1);
-    }
-    // 2-2
-    else{
-        cnt+=1;
-        return solve(arr, x, y, changeDir[dir] , 0);
-    }
-    
+    return;
 }
 
 
 int main(){
 
-    int n, m;
-    int r, c, d;
-    int arr[51][51];
+    int n;
+    int x, y, g, d;
     
-    cin >> n >> m;
-    cin >> r >> c >> d;
+    cin >> n;
     
-    for(int i=0; i< n; i++){
-        for(int j=0; j< m; j++){
-            cin >> arr[i][j];
-        }
+    for(int i=0; i<n ;i++){
+        
+        // 초기화
+        vt.clear();
+        
+        cin >> x >> y >> d >> g;
+        
+        arr[x][y] = 1;
+        
+        solve(x, y , d, g);
+    
     }
-    cnt = 1;
-    ans =0;
-    solve(arr, r, c, d, 1);
     
-    
+    cout << cntSqaure() ;
     
     
     return 0;
 }
+
+
+
+
+
+
+
