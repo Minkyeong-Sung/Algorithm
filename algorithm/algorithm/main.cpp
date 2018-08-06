@@ -1,96 +1,136 @@
 #include <iostream>
+#include <cstring>
 #include <vector>
 
 using namespace std;
 
-
-// 우 상 좌 하
-int dx[] = {1, 0,-1, 0};
-int dy[] = {0, -1, 0, 1};
-
-int arr[101][101];
+int dice[7] = {0, 0, 0, 0, 0, 0, 0};
+int arr[21][21];
 vector<int> vt;
 
-int cntSqaure(){
+// 공백 우 좌 상 하
+int dx[] = {0, 0, 0, -1, 1};
+int dy[] = {0, 1, -1, 0, 0};
+int change[] = {0, 6,5,4,3,2,1};
+int x, y;
 
-    int ans = 0;
+// 처음은 1번에서 시작!
+void moveDice(int n){
+
+    int t1,t2 ,t3, t4;
     
-    for(int i=0; i<100; i++){
-        for(int j=0; j<100; j++){
+    if(n==1){
+    
+        t1 = dice[3];
+        t2 = dice[1];
+        t3 = dice[4];
+        t4 = dice[6];
         
-            if(arr[i][j] == 1&& arr[i+1][j] == 1 && arr[i][j+1] == 1 && arr[i+1][j+1] ==1){
-                    ans += 1;
-                
-            }
-        }
+        dice[3] = t2;
+        dice[1] = t3;
+        dice[4] = t4;
+        dice[6] = t1;
     }
-    
-    return ans;
-}
-
-
-void solve(int x , int y, int dir, int g){
-
-    int cnt = 0;
-    arr[x][y] = 1;
-    
-    vt.push_back(dir);
-    
-    // 회전
-    while(cnt <= g){
-        int start_x = x;
-        int start_y = y;
+    else if(n==2){
         
-        int len = vt.size();
-    
-        // x 세대만큼 회전!
-        for(int i=0; i< len; i++){
-            int nX = start_x + dx[vt[i]];
-            int nY = start_y + dy[vt[i]];
-            
-            start_x = nX;
-            start_y = nY;
-            
-            arr[start_x][start_y] = 1;
-        }
+        t1 = dice[3];
+        t2 = dice[1];
+        t3 = dice[4];
+        t4 = dice[6];
         
-        // 다음 세대수 회전을 위한 값 넣기
-        for(int i= len-1; i>=0; i--){
-            vt.push_back((vt[i]+1) %4);
-        }
-        
-        cnt++;
+        dice[3] = t4;
+        dice[1] = t1;
+        dice[4] = t2;
+        dice[6] = t3;
     }
-    
-    return;
+    else if(n==3){
+        
+        t1 = dice[2];
+        t2 = dice[1];
+        t3 = dice[5];
+        t4 = dice[6];
+        
+        dice[2] = t2;
+        dice[1] = t3;
+        dice[5] = t4;
+        dice[6] = t1;
+    }
+    else{
+        
+        t1 = dice[2];
+        t2 = dice[1];
+        t3 = dice[5];
+        t4 = dice[6];
+        
+        dice[2] = t4;
+        dice[1] = t1;
+        dice[5] = t2;
+        dice[6] = t3;
+    }
+
 }
 
 
 int main(){
-
-    int n;
-    int x, y, g, d;
     
-    cin >> n;
+    int n, m,  k, num;
     
-    for(int i=0; i<n ;i++){
-        
-        // 초기화
-        vt.clear();
-        
-        cin >> x >> y >> d >> g;
-        
-        arr[x][y] = 1;
-        
-        solve(x, y , d, g);
+    cin >> n>> m >> x >> y >> k;
     
+    
+    for(int i=0; i<n; i++){
+        for(int j=0; j<m; j++){
+            cin >> arr[i][j];
+        }
     }
     
-    cout << cntSqaure() ;
+    // 주사위 굴리기
+    for(int i=0; i<k; i++){
     
-    
+        cin >> num;
+        
+        int next_x = x + dx[num];
+        int next_y = y + dy[num];
+        
+        // 다음 좌표가 범위 내에 있을 때,
+        if(next_x >= 0 && next_x < n && next_y >= 0 && next_y < m){
+            
+            moveDice(num);
+            
+            // 바닥이 0이라면, 칸에는 주사위의 바닥 수가 복사된다.
+            if(arr[next_x][next_y] == 0){
+            
+                arr[next_x][next_y] = dice[6];
+            }
+            // 바닥이 0이 아니라면, 칸의 수가 주사위로 복사되고 칸은 0 으로!
+            else{
+                dice[6] = arr[next_x][next_y];
+                arr[next_x][next_y] = 0;
+            }
+            
+            x = next_x;
+            y = next_y;
+            
+            cout << dice[1] << '\n';
+            
+        }
+        
+        
+        
+    }
+
+
+
     return 0;
 }
+
+
+
+
+
+
+
+
 
 
 
