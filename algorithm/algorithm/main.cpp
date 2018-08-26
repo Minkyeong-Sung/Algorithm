@@ -1,72 +1,90 @@
 #include <iostream>
-#include <vector>
+#include <queue>
 #include <cstring>
-#include <cstdio>
-#include <algorithm>
+
 
 using namespace std;
 
-int dx[] = {0, 0, 1, -1};
-int dy[] = {1, -1, 0, 0};
+int arr[50][50];
+int ans[51];
+bool check[50][50];
+int w, h;
 
-int arr[30][30];
-int check[30][30];
-int ans[25*25];
-int n;
-int cnt;
+// 상하좌우 + 대각선
+int dx[] = {-1, -1, -1,  0, 0, 1, 1, 1};
+int dy[] = {-1, 0, 1, -1, 1, -1,0,  1};
 
-// 주변에 1이 있는지 확인 후, 계속 탐색
-void DFS(int i , int j){
-
-    check[i][j] = cnt;
+// 1은 땅, 0은 바다
+void BFS(int i, int j, int cnt){
     
-    for(int z = 0; z<4; z++){
+    queue<pair<int, int>> q;
     
-        int tx = i + dx[z];
-        int ty = j + dy[z];
+    q.push(make_pair(i, j));
+    check[i][j] = true;
+    
+    
+    while(!q.empty()){
         
-        if(tx >=0 && ty >= 0 && tx < n && ty <n &&  check[tx][ty] == 0 && arr[tx][ty] == 1){
-            DFS(tx, ty);
-            ans[cnt] += 1;
-        }
-    }
-}
-
-
-int main(){
-
-    
-    cin >> n;
-    
-    memset(ans, 0, sizeof(ans));
-    
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            scanf("%1d", &arr[i][j]);
-        }
-    }
-    
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            if(check[i][j] == 0 && arr[i][j] == 1){
-                // 가장 먼저 발견된 것 카운트
-                ans[++cnt] += 1;
-                
-                // 주변 탐색 시작
-                DFS(i, j);
+        i = q.front().first;
+        j = q.front().second;
+        q.pop();
+        
+        for(int z = 0; z<8; z++){
+        
+            int nx = i + dx[z];
+            int ny = j + dy[z];
+        
+            if(nx >=0 && ny >= 0 && nx < h && ny < w ){
+            
+                if(check[nx][ny] == false && arr[nx][ny] == 1){
+                    check[nx][ny] = true;
+                    q.push(make_pair(nx, ny));
+                }
+        
             }
         }
     }
+}
+
+
+
+int main(){
     
-    cout << cnt <<'\n';
+    int cnt = 0;
     
-    // 문제 조건 중, 오름차순으로 출력하기 위해
-    sort(ans+1, ans+1+ cnt);
-    
-    for(int i=1; i<=cnt; i++){
-        cout << ans[i] << '\n';
+    while(1){
+        
+        cin >> w >> h;
+        cnt = 0;
+        
+        memset(arr, 0, sizeof(arr));
+        memset(check, false, sizeof(check));
+        
+        // 종료 구문
+        if( w == 0 && h == 0) break;
+        
+        for(int i=0; i<h; i++){
+            for(int j=0; j<w ; j++){
+                cin >> arr[i][j];
+            }
+        }
+        
+        for(int i=0; i<h; i++){
+            for(int j=0; j<w ; j++){
+                
+                if(check[i][j] == false && arr[i][j] == 1){
+                    BFS(i, j, ++cnt);
+                    
+                }
+            }
+        }
+        
+        cout << cnt <<'\n';
+
     }
-    
 
     return 0;
 }
+
+
+
