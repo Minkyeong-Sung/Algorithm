@@ -1,140 +1,72 @@
 #include <iostream>
-#include <cstring>
 #include <vector>
+#include <cstring>
+#include <cstdio>
+#include <algorithm>
 
 using namespace std;
 
-int dice[7] = {0, 0, 0, 0, 0, 0, 0};
-int arr[21][21];
-vector<int> vt;
+int dx[] = {0, 0, 1, -1};
+int dy[] = {1, -1, 0, 0};
 
-// 공백 우 좌 상 하
-int dx[] = {0, 0, 0, -1, 1};
-int dy[] = {0, 1, -1, 0, 0};
-int change[] = {0, 6,5,4,3,2,1};
-int x, y;
+int arr[30][30];
+int check[30][30];
+int ans[25*25];
+int n;
+int cnt;
 
-// 처음은 1번에서 시작!
-void moveDice(int n){
+// 주변에 1이 있는지 확인 후, 계속 탐색
+void DFS(int i , int j){
 
-    int t1,t2 ,t3, t4;
+    check[i][j] = cnt;
     
-    if(n==1){
+    for(int z = 0; z<4; z++){
     
-        t1 = dice[3];
-        t2 = dice[1];
-        t3 = dice[4];
-        t4 = dice[6];
+        int tx = i + dx[z];
+        int ty = j + dy[z];
         
-        dice[3] = t2;
-        dice[1] = t3;
-        dice[4] = t4;
-        dice[6] = t1;
+        if(tx >=0 && ty >= 0 && tx < n && ty <n &&  check[tx][ty] == 0 && arr[tx][ty] == 1){
+            DFS(tx, ty);
+            ans[cnt] += 1;
+        }
     }
-    else if(n==2){
-        
-        t1 = dice[3];
-        t2 = dice[1];
-        t3 = dice[4];
-        t4 = dice[6];
-        
-        dice[3] = t4;
-        dice[1] = t1;
-        dice[4] = t2;
-        dice[6] = t3;
-    }
-    else if(n==3){
-        
-        t1 = dice[2];
-        t2 = dice[1];
-        t3 = dice[5];
-        t4 = dice[6];
-        
-        dice[2] = t2;
-        dice[1] = t3;
-        dice[5] = t4;
-        dice[6] = t1;
-    }
-    else{
-        
-        t1 = dice[2];
-        t2 = dice[1];
-        t3 = dice[5];
-        t4 = dice[6];
-        
-        dice[2] = t4;
-        dice[1] = t1;
-        dice[5] = t2;
-        dice[6] = t3;
-    }
-
 }
 
 
 int main(){
+
     
-    int n, m,  k, num;
+    cin >> n;
     
-    cin >> n>> m >> x >> y >> k;
-    
+    memset(ans, 0, sizeof(ans));
     
     for(int i=0; i<n; i++){
-        for(int j=0; j<m; j++){
-            cin >> arr[i][j];
+        for(int j=0; j<n; j++){
+            scanf("%1d", &arr[i][j]);
         }
     }
     
-    // 주사위 굴리기
-    for(int i=0; i<k; i++){
-    
-        cin >> num;
-        
-        int next_x = x + dx[num];
-        int next_y = y + dy[num];
-        
-        // 다음 좌표가 범위 내에 있을 때,
-        if(next_x >= 0 && next_x < n && next_y >= 0 && next_y < m){
-            
-            moveDice(num);
-            
-            // 바닥이 0이라면, 칸에는 주사위의 바닥 수가 복사된다.
-            if(arr[next_x][next_y] == 0){
-            
-                arr[next_x][next_y] = dice[6];
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            if(check[i][j] == 0 && arr[i][j] == 1){
+                // 가장 먼저 발견된 것 카운트
+                ans[++cnt] += 1;
+                
+                // 주변 탐색 시작
+                DFS(i, j);
             }
-            // 바닥이 0이 아니라면, 칸의 수가 주사위로 복사되고 칸은 0 으로!
-            else{
-                dice[6] = arr[next_x][next_y];
-                arr[next_x][next_y] = 0;
-            }
-            
-            x = next_x;
-            y = next_y;
-            
-            cout << dice[1] << '\n';
-            
         }
-        
-        
-        
     }
-
-
+    
+    cout << cnt <<'\n';
+    
+    // 문제 조건 중, 오름차순으로 출력하기 위해
+    sort(ans+1, ans+1+ cnt);
+    
+    for(int i=1; i<=cnt; i++){
+        cout << ans[i] << '\n';
+    }
+    
 
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
