@@ -1,81 +1,91 @@
 #include <iostream>
+#include <cstdio>
 #include <algorithm>
-#include <queue>
-#include <cstring>
 
 using namespace std;
 
-int dx[] = {-1 , 1, 0, 0};
-int dy[] = {0, 0 ,-1, 1};
-bool check[10000000];
-int arr[4][4];
-int result ;
+int arr[11][11];
+bool check[11];
+int per[11];
+int ans  = 2147483647;
 
-void DFS(int x, int y ,string num){
+void calculator(int per[], int n){
 
-    num += to_string(arr[x][y]);
+    int sum = 0;
     
-    // 재귀 종료 조건
-    if(num.size() == 7){
+    for(int i=0; i<n; i++){
         
-        int change = stoi(num);
+        if(arr[per[i]][per[i+1]]==0) return;
         
-        // 7자리 숫자가 완성되었을 떄 check 판단
-        if(check[change] == false){
-            result += 1;
-            check[change] = true;
-        }
-        
-        return;
+        sum += arr[per[i]][per[i+1]];
     }
     
-    // 숫자 중복 사용가능
-    //check[x][y] = true;
+    ans = min(ans , sum);
     
     
-    for(int i=0; i< 4; i++){
+}
+
+
+void permutation(int n, int k, int num){
+
+    per[k] = num;
+    
+    if(n-1==k){
         
-        int tx = x + dx[i];
-        int ty = y + dy[i];
+        per[n] = per[0];
         
-        if(tx >= 0 && ty >= 0 && tx < 4 && ty<4){
-            
-            DFS(tx, ty, num);
-            
-        }
+        calculator(per, n);
+        
+        
+        
+        return ;
+    }
+    
+    for(int i=0; i<n; i++){
+        
+        if(check[i] == true) continue;
+        
+        check[i] = true;
+        
+        permutation(n, k+1, i);
+        
+        check[i] = false;
     }
 
+    
 }
 
 int main(){
-
-    int testCase;
-    string num;
-    cin >> testCase;
     
-    for(int t=1; t<= testCase; t++){
-        
-        // 테스트 케이스마다 초기화 필요
-        memset(check, false, sizeof(check));
-        result = 0;
-        
-        for(int i=0; i<4; i++){
-            for(int j=0; j<4; j++){
-                cin >> arr[i][j];
-            }
+    ios_base::sync_with_stdio(false);
+    
+    int n;
+    
+    scanf("%d", &n);
+    
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            scanf("%d", &arr[i][j]);
         }
-        
-        // DFS 탐색 : 끝(7자리수)이 정해져 있어서 사용
-        for(int i=0; i<4; i++){
-            for(int j=0; j<4; j++){
-                DFS(i, j, "");
-            }
-        }
-        
-        cout << "#" << t << ' ' << result <<'\n';
     }
     
-
-
+   
+    for(int i=0; i<n; i++){
+        
+        check[i] = true;
+        
+        permutation(n, 0, i);
+        
+        check[i] = false;
+    
+    }
+    
+    printf("%d", ans);
+    
     return 0;
 }
+
+
+
+
+
