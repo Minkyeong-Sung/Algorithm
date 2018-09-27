@@ -1,19 +1,19 @@
 #include <iostream>
-#include <cstdio>
 #include <queue>
-#define MAXNUM 100500
+
+#define MAXNUM 1000001
 
 using namespace std;
 
 bool check[MAXNUM];
 
-int findTime(int n, int k){
+string pushButton(int F, int S, int G, int U, int D){
     
-    int time = 0;
-
     queue<int> q;
+    int cnt = 0;
     
-    q.push(n);
+    q.push(S);
+    check[S] = true;
     
     while(!q.empty()){
         
@@ -24,62 +24,51 @@ int findTime(int n, int k){
             int node = q.front();
             q.pop();
             
-            // 정답을 찾는 경우
-            if(node == k){
-                return time;
-            }
+            // 도착했을때, 함수 종료
+            if(node == G) return to_string(cnt);
             
-            // 3가지 경우를 판별
-            // 범위내에 존재하며, 방문하지 않았을 경우에만 검사 -> 중복 검사를 피하기 위해
-            if(node-1 >= 0 && check[node-1] != true){
+            
+            // 위로 가는 버튼을 누르는 경우
+            if(node + U < MAXNUM && node+U <= F && check[node+U] == false ){
                 
-                q.push(node-1);
-                check[node-1] = true;
-            
+                q.push(node+U);
+                check[node+U] = true;
             }
             
-            if(node+1 <= MAXNUM && check[node+1] != true){
+            // 아래로 가는 버튼을 누르는 경우
+            if(node - D > 0  && check[node-D] == false){
                 
-                q.push(node+1);
-                check[node+1] = true;
+                q.push(node-D);
+                check[node-D] = true;
             
             }
-            
-            if(node*2 <= MAXNUM && check[node*2] != true){
-                
-                q.push(node*2);
-                check[node*2] = true;
-            }
-        
         }
-    
-        time++;
-    
-    
+        
+        cnt ++;
     }
     
+    
 
-
-
-    return time;
+    
+    return "use the stairs";
 }
 
-
-
 int main(){
-    
-    ios_base::sync_with_stdio(false);
 
-    int n, k;
+    int  F, S, G, U, D;
+
+    // 총 층수 , 현재 층, 스타트링크, 업, 다운
+    cin >>  F >>  S >>  G >> U >> D;
     
-    scanf("%d %d", &n , &k);
-    
-    if(n==k) {
-        printf("0");
+    if((S > G && D == 0) || (S < G && U == 0)){
+        cout << "use the stairs";
         return 0;
     }
     
-    printf("%d", findTime(n,k));
+    
+    cout << pushButton(F,S, G, U, D);
+
+
 
 
 
