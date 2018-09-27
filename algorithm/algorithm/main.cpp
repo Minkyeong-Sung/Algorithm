@@ -1,91 +1,87 @@
 #include <iostream>
 #include <cstdio>
-#include <algorithm>
+#include <queue>
+#define MAXNUM 100500
 
 using namespace std;
 
-int arr[11][11];
-bool check[11];
-int per[11];
-int ans  = 2147483647;
+bool check[MAXNUM];
 
-void calculator(int per[], int n){
-
-    int sum = 0;
+int findTime(int n, int k){
     
-    for(int i=0; i<n; i++){
+    int time = 0;
+
+    queue<int> q;
+    
+    q.push(n);
+    
+    while(!q.empty()){
         
-        if(arr[per[i]][per[i+1]]==0) return;
+        int size = q.size();
         
-        sum += arr[per[i]][per[i+1]];
+        for(int i=0; i< size; i++){
+            
+            int node = q.front();
+            q.pop();
+            
+            // 정답을 찾는 경우
+            if(node == k){
+                return time;
+            }
+            
+            // 3가지 경우를 판별
+            // 범위내에 존재하며, 방문하지 않았을 경우에만 검사 -> 중복 검사를 피하기 위해
+            if(node-1 >= 0 && check[node-1] != true){
+                
+                q.push(node-1);
+                check[node-1] = true;
+            
+            }
+            
+            if(node+1 <= MAXNUM && check[node+1] != true){
+                
+                q.push(node+1);
+                check[node+1] = true;
+            
+            }
+            
+            if(node*2 <= MAXNUM && check[node*2] != true){
+                
+                q.push(node*2);
+                check[node*2] = true;
+            }
+        
+        }
+    
+        time++;
+    
+    
     }
     
-    ans = min(ans , sum);
-    
-    
+
+
+
+    return time;
 }
 
 
-void permutation(int n, int k, int num){
-
-    per[k] = num;
-    
-    if(n-1==k){
-        
-        per[n] = per[0];
-        
-        calculator(per, n);
-        
-        
-        
-        return ;
-    }
-    
-    for(int i=0; i<n; i++){
-        
-        if(check[i] == true) continue;
-        
-        check[i] = true;
-        
-        permutation(n, k+1, i);
-        
-        check[i] = false;
-    }
-
-    
-}
 
 int main(){
     
     ios_base::sync_with_stdio(false);
+
+    int n, k;
     
-    int n;
+    scanf("%d %d", &n , &k);
     
-    scanf("%d", &n);
-    
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            scanf("%d", &arr[i][j]);
-        }
+    if(n==k) {
+        printf("0");
+        return 0;
     }
     
-   
-    for(int i=0; i<n; i++){
-        
-        check[i] = true;
-        
-        permutation(n, 0, i);
-        
-        check[i] = false;
-    
-    }
-    
-    printf("%d", ans);
-    
+    printf("%d", findTime(n,k));
+
+
+
     return 0;
 }
-
-
-
-
-
