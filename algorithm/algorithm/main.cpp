@@ -1,93 +1,104 @@
 #include <iostream>
 #include <queue>
-#include <cstring>
 
 using namespace std;
 
-bool check[10000];
 
-char dx[] = {'D' , 'S' , 'L' , 'R'};
+bool check[201][201];
+bool ans[201];
+
+int a, b, c;
+
+void DFS(int move_a, int move_b, int move_c){
+
+    // 탈출
+    if(check[move_a][move_b] == true){
+        return;
+    }
+    
+    // A 가 비었을 때, C물통의 양을 출력
+    // 비었을 당시 C의 양을 인덱스에 저장하여 표시
+    if(move_a == 0){
+        ans[move_c] = true;
+    }
+    
+    // 방문 상태 체크
+    check[move_a][move_b] = true;
+    
+    
+    
+    /*
+    // 물통을 옮길 때,
+    // 가득 채우거나 완전히 물통이 빌 때까지 담는다
+    */
+    
+    // a-> b 물토 옮기는 경우
+    if(b < move_a + move_b){
+    
+        DFS( (move_a + move_b)-b , b, move_c);
+    }
+    else{
+        
+        DFS(0, move_a + move_b, move_c);
+    }
+    
+    // b-> a
+    if(a < move_a + move_b){
+        
+        DFS( a, (move_a + move_b)-a ,  move_c);
+    }
+    else{
+        
+        DFS( move_a + move_b, 0, move_c);
+    }
+
+    
+    // c-> a
+    if(a < move_a + move_c){
+        
+        DFS( a, move_b ,  (move_a + move_c)-a);
+    }
+    else{
+        
+        DFS((move_a + move_c), move_b, 0);
+    }
+    
+    
+    // c-> b
+    if(b < move_b + move_c){
+        
+        DFS( move_a, b ,  (move_b + move_c)-b);
+    }
+    else{
+        
+        DFS(move_a, (move_b + move_c) , 0);
+    }
+    
+    // a-> c
+    // b-> c
+    // C가 가득 차있는 상태에서 옮기는 상황으로
+    // C로 옮길때는 어떤 상황에서도 a+ b = c가 된다!
+    DFS(0, move_b, move_a+ move_c);
+    DFS(move_a, 0, move_b+ move_c);
+
+}
 
 int main(){
+    
+    
+    cin >> a >> b >> c;
+    
+    DFS(0, 0, c);
 
-
-    int n;
-    int num1, num2;
     
-    cin >> n;
     
-    for(int i=0; i<n; i++){
+    for(int i=0; i<201; i++){
         
-        memset(check, false, sizeof(check));
-    
-        cin >> num1 >> num2;
-        
-        queue<pair<int, string>> q;
-       
-        q.push(make_pair(num1, ""));
-        check[num1] = true;
-        
-        while(!q.empty()){
-            
-            int node = q.front().first;
-            string ans = q.front().second;
-            q.pop();
-            
-            
-            if(node == num2){
-                cout << ans <<'\n';
-                break;
-            }
-            
-            
-            for(int j=0; j<4; j++){
-                int next;
-            
-                if(dx[j] == 'D'){
-                
-                    next = (node*2)%10000;
-                    
-                    if(check[next] == false){
-                        
-                        q.push(make_pair(next, ans+ "D"));
-                        check[next] = true;
-                        
-                    }
-                }
-                else if(dx[j] == 'S'){
-                    
-                    next = (node - 1) < 0 ? 9999 : node - 1;//   n에서 1 을 뺀 결과 n-1을 레지스터에 저장한다. n이 0 이라면 9999
-                
-                    if(check[next] == false){
-                        q.push(make_pair(next, ans + "S"));
-                        check[next] = true;
-                    }
-                    
-                }
-                else if(dx[j] == 'L'){
-                
-                    next =  (node % 1000) * 10 + node / 1000;
-                    if(check[next] == false){
-                        q.push(make_pair(next, ans + "L"));
-                        check[next] = true;
-                    }
-                }
-                else{
-                    
-                    next =  (node % 10) * 1000 + (node / 10);
-                    if(check[next] == false){
-                        q.push(make_pair(next, ans + "R"));
-                        check[next] = true;
-                    }
-                
-                }
-            }
+        if(ans[i] == true){
+            cout << i << ' ' ;
         }
     
     }
-
-
-
 
 
 
