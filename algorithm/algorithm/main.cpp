@@ -1,70 +1,82 @@
 #include <iostream>
-#include <vector>
-#include <cstring>
-
 
 using namespace std;
 
+int n;
+bool check[15][15];
+bool colum[15];
+bool diagonal1[40], diagonal2[40]; // / , \ 방향 체크
 
-// 만들 암호 길이 , 현재까지 만든 암호 , 사용가능한 알파벳, 사용할지말지 결정해야하는 인덱스
-void makePassword(int n, string password, vector<char> &vt, int index){
 
-    if(password.length() == n){
-        
-        int jaum=0, moum=0;
-        
-        for(char x : password){
-        
-            if(x == 'a' || x == 'e' || x == 'i' || x == 'o' || x == 'u'){
-                moum += 1;
-            }
-            else{
-                jaum += 1;
-            }
-        }
-        
-        // 암호 생성 조건 만족
-        if(moum >= 1  && jaum >= 2){
-        
-            cout << password <<'\n';
-            return;
-        }
+/*
+ 퀸은 8방향으로 움직인다.
+ 행의 갯수만큼만 판단을 해주며,
+ 그에 따른 대각선과 열 방향에서 체크만 해주며 파악하면 된다.
+ */
+
+bool checkQueen(int row, int col){
+
+    // 이미 퀸의 방향에 해당된다면
+    if(colum[col] == true){
+        return false;
     }
     
-    // 배열 크기를 넘어가는 경우 (기저사례)
-    if(index >= vt.size()){
-        return;
+    if(diagonal1[row+col] == true){
+        return false;
     }
     
+    if(diagonal2[row-col+n] == true){
+        return false;
+    }
 
-    // index번째 알파벳을 사용하는 경우
-    makePassword(n, password + vt[index], vt, index+1);
-    // 사용하지 않는 경우
-    makePassword(n, password, vt, index+1);
-    
-
-
+    return true;
 }
+
+
+int BFS(int row){
+    
+    if(row == n){
+        return 1;
+    }
+    
+    int ans = 0;
+    
+    for(int i=0; i<n; i++){
+        
+        check[row][i] = true;
+        
+        // 8방향에 퀸이 존재하는지 여부 판단
+        if(checkQueen(row, i) == true){
+            colum[i] = true;
+            diagonal1[row+i] = true;
+            diagonal2[row-i+n] = true;
+            check[row][i] = true;
+            
+            // 다음 위치 탐색
+            ans += BFS(row+1);
+            
+            // 백트레킹으로 계속 탐색하기 위해 다시 false로 바꿔준다.
+            check[row][i] = false;
+            colum[i] = false;
+            diagonal1[row+i] = false;
+            diagonal2[row-i+n] = false;
+            
+        }
+        
+        
+    }
+    
+    return ans;
+}
+
+
 
 int main(){
     
-    vector<char> vt;
-    int L, C;
-    char ch;
-    // L개의 알파벳 생성
-    cin >> L >> C;
+    cin >> n;
     
-    for(int i=0; i<C; i++){
-        cin >> ch;
-        
-        vt.push_back(ch);
-    }
-    
-    sort(vt.begin(), vt.end());
-
-
-    makePassword(L,"", vt, 0);
-
-
+    cout <<BFS(0);
+ 
     return 0;
+
 }
