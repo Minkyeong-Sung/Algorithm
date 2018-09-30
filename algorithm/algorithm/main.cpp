@@ -1,104 +1,110 @@
 #include <iostream>
 #include <queue>
+#include <map>
+#include <string>
+
+#define N 3
 
 using namespace std;
 
 
-bool check[201][201];
-bool ans[201];
+int dx[] = {0, 0, 1, -1};
+int dy[] = {1, -1, 0, 0};
 
-int a, b, c;
+void BFS(int arrNum){
 
-void DFS(int move_a, int move_b, int move_c){
-
-    // 탈출
-    if(check[move_a][move_b] == true){
-        return;
+    queue<int> q;
+    map<int, int> map;
+    
+    map[arrNum] = 0;
+    q.push(arrNum);
+    
+    while(!q.empty()){
+    
+        int currentNum = q.front();
+        string strNow = to_string(currentNum);
+        q.pop();
+        
+        // 배열에 저장할 수 없기에 문자로 나타내줬던 부분을
+        // 배열 좌표 값으로 변환
+        // 3*3 배열이므로 각각 나누면 해당 좌표값이 나옴
+        
+        int tmp = strNow.find('9');
+        
+        int x = tmp/3;
+        int y = tmp % 3;
+    
+        // 상하좌우 방향으로 swap할 수 있는지 탐색
+        for(int i=0; i<4; i++){
+            
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+            
+            if(nx >=  0 && nx <  N && ny >= 0 && ny < N){
+                // 위치를 바꿔서 탐색해줄 임시 변수
+                string next =  strNow;
+                
+                swap(next[x*3 + y], next[nx*3 + ny]);
+                
+                int num = stoi(next);
+                
+                // map 에 num 숫자가 존재하지 않으면
+                if(map.count(num)==0){
+                    
+                    map[num] = map[currentNum] + 1;
+                    q.push(num);
+                
+                }
+            }
+        }
     }
     
-    // A 가 비었을 때, C물통의 양을 출력
-    // 비었을 당시 C의 양을 인덱스에 저장하여 표시
-    if(move_a == 0){
-        ans[move_c] = true;
-    }
-    
-    // 방문 상태 체크
-    check[move_a][move_b] = true;
-    
-    
-    
-    /*
-    // 물통을 옮길 때,
-    // 가득 채우거나 완전히 물통이 빌 때까지 담는다
-    */
-    
-    // a-> b 물토 옮기는 경우
-    if(b < move_a + move_b){
-    
-        DFS( (move_a + move_b)-b , b, move_c);
+    if(map.count(123456789) == 0){
+        cout << -1 ;
     }
     else{
-        
-        DFS(0, move_a + move_b, move_c);
+        cout << map[123456789] ;
     }
     
-    // b-> a
-    if(a < move_a + move_b){
-        
-        DFS( a, (move_a + move_b)-a ,  move_c);
-    }
-    else{
-        
-        DFS( move_a + move_b, 0, move_c);
-    }
 
-    
-    // c-> a
-    if(a < move_a + move_c){
-        
-        DFS( a, move_b ,  (move_a + move_c)-a);
-    }
-    else{
-        
-        DFS((move_a + move_c), move_b, 0);
-    }
-    
-    
-    // c-> b
-    if(b < move_b + move_c){
-        
-        DFS( move_a, b ,  (move_b + move_c)-b);
-    }
-    else{
-        
-        DFS(move_a, (move_b + move_c) , 0);
-    }
-    
-    // a-> c
-    // b-> c
-    // C가 가득 차있는 상태에서 옮기는 상황으로
-    // C로 옮길때는 어떤 상황에서도 a+ b = c가 된다!
-    DFS(0, move_b, move_a+ move_c);
-    DFS(move_a, 0, move_b+ move_c);
+
+
+
+
+
+
+
 
 }
 
 int main(){
-    
-    
-    cin >> a >> b >> c;
-    
-    DFS(0, 0, c);
 
+    int input;
+    int arrNum = 0;
     
-    
-    for(int i=0; i<201; i++){
+    for(int i=0; i<N; i++){
+        for(int j=0; j<N; j++){
         
-        if(ans[i] == true){
-            cout << i << ' ' ;
+            cin >> input;
+            
+            if(input == 0){
+                
+                /*
+                 0-> 9로 바꾸면 123456789 항상 9자리가 만들어지기 때문에
+                 편의상 바꿔준다
+                 */
+                input = 9;
+            }
+            
+            arrNum =  (arrNum *10) + input ;
         }
-    
     }
+    
+    BFS(arrNum);
+    
+
+
+
 
 
 
