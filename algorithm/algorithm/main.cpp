@@ -1,82 +1,59 @@
 #include <iostream>
 
+
 using namespace std;
 
-int n;
-bool check[15][15];
-bool colum[15];
-bool diagonal1[40], diagonal2[40]; // / , \ 방향 체크
+char arr[21][21];
+bool alpha[26];
+int r, c, maxNum=1;
+
+int dx[] = {-1, 1, 0, 0};
+int dy[] = {0, 0, -1, 1};
 
 
-/*
- 퀸은 8방향으로 움직인다.
- 행의 갯수만큼만 판단을 해주며,
- 그에 따른 대각선과 열 방향에서 체크만 해주며 파악하면 된다.
- */
-
-bool checkQueen(int row, int col){
-
-    // 이미 퀸의 방향에 해당된다면
-    if(colum[col] == true){
-        return false;
+void DFS(int x, int y, int cnt){
+    
+    if(maxNum < cnt){
+        maxNum = cnt;
     }
     
-    if(diagonal1[row+col] == true){
-        return false;
-    }
+    for(int i=0; i<4; i++){
     
-    if(diagonal2[row-col+n] == true){
-        return false;
-    }
-
-    return true;
-}
-
-
-int BFS(int row){
-    
-    if(row == n){
-        return 1;
-    }
-    
-    int ans = 0;
-    
-    for(int i=0; i<n; i++){
+        int nx = x + dx[i];
+        int ny = y + dy[i];
         
-        check[row][i] = true;
+        if(nx >=0 && ny >= 0 && nx < r && ny < c && alpha[arr[nx][ny] - 65] == false ){
         
-        // 8방향에 퀸이 존재하는지 여부 판단
-        if(checkQueen(row, i) == true){
-            colum[i] = true;
-            diagonal1[row+i] = true;
-            diagonal2[row-i+n] = true;
-            check[row][i] = true;
+            alpha[arr[nx][ny] - 65] = true;
             
-            // 다음 위치 탐색
-            ans += BFS(row+1);
+            DFS(nx, ny, cnt+1);
             
-            // 백트레킹으로 계속 탐색하기 위해 다시 false로 바꿔준다.
-            check[row][i] = false;
-            colum[i] = false;
-            diagonal1[row+i] = false;
-            diagonal2[row-i+n] = false;
-            
+            alpha[arr[nx][ny] - 65] = false;
+        
         }
-        
-        
     }
-    
-    return ans;
 }
 
 
 
 int main(){
     
-    cin >> n;
+    cin >> r >> c;
     
-    cout <<BFS(0);
- 
-    return 0;
+    for(int i=0; i<r; i++){
+        for(int j=0; j<c; j++){
+            cin >> arr[i][j];
+        }
+    }
+    
+    alpha[arr[0][0] - 65] = true;
+    
+    DFS(0,0, 1);
+    
+    
+    cout << maxNum;
 
+
+
+    return 0;
 }
