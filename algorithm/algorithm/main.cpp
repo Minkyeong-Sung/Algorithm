@@ -1,112 +1,96 @@
 #include <iostream>
-#include <queue>
 #include <map>
+#include <vector>
 #include <string>
-
-#define N 3
 
 using namespace std;
 
 
-int dx[] = {0, 0, 1, -1};
-int dy[] = {1, -1, 0, 0};
+vector<pair<int,int>> vt[1001][1001];
+bool check[1001][1001];
 
-void BFS(int arrNum){
 
-    queue<int> q;
-    map<int, int> map;
-    
-    map[arrNum] = 0;
-    q.push(arrNum);
-    
-    while(!q.empty()){
-    
-        int currentNum = q.front();
-        string strNow = to_string(currentNum);
-        q.pop();
-        
-        // 배열에 저장할 수 없기에 문자로 나타내줬던 부분을
-        // 배열 좌표 값으로 변환
-        // 3*3 배열이므로 각각 나누면 해당 좌표값이 나옴
-        
-        int tmp = strNow.find('9');
-        
-        int x = tmp/3;
-        int y = tmp % 3;
-    
-        // 상하좌우 방향으로 swap할 수 있는지 탐색
-        for(int i=0; i<4; i++){
+void checkRoad(int x, int y, int toX, int toY){
+
+    for(int i=x; i<= toX; i++){
+        for(int j=y; j<= toY; j++){
             
-            int nx = x + dx[i];
-            int ny = y + dy[i];
-            
-            if(nx >=  0 && nx <  N && ny >= 0 && ny < N){
-                // 위치를 바꿔서 탐색해줄 임시 변수
-                string next =  strNow;
+            if((i== x || i == toX) && j < toY){
                 
-                swap(next[x*3 + y], next[nx*3 + ny]);
-                
-                int num = stoi(next);
-                
-                // map 에 num 숫자가 존재하지 않으면
-                if(map.count(num)==0){
-                    
-                    map[num] = map[currentNum] + 1;
-                    q.push(num);
-                
-                }
+                vt[i][j].push_back(make_pair(i, j+1));
+                vt[i][j+1].push_back(make_pair(i, j));
             }
+            
+            if((j==y || j== toY) && i < toX){
+                
+                vt[i][j].push_back(make_pair(i+1, j));
+                vt[i+1][j].push_back(make_pair(i, j));
+            }
+            
         }
     }
+}
+
+void DFS(int x, int y){
+
     
-    if(map.count(123456789) == 0){
-        cout << -1 ;
-    }
-    else{
-        cout << map[123456789] ;
-    }
+    check[x][y] = true;
     
+    for(int i=0; i< vt[x][y].size(); i++){
+        
+        int nx = vt[x][y][i].first;
+        int ny = vt[x][y][i].second;
+        
+        if(check[nx][ny] == false){
+            DFS(nx, ny);
+        }
+    }
 
-
-
-
-
-
-
-
+    return;
 
 }
 
-int main(){
 
-    int input;
-    int arrNum = 0;
+int main(){
     
-    for(int i=0; i<N; i++){
-        for(int j=0; j<N; j++){
+    int n, cnt = 0;
+    int x1, x2, y1, y2;
+    int sx = 500, sy = 500; // 음수를 없애기 위해
+    
+    cin >> n;
+    
+    for(int i=0; i<n; i++){
         
-            cin >> input;
+        cin >> x1 >> y1 >> x2 >> y2;
+        
+        checkRoad(x1+500, y1+500, x2+500, y2+500);
+    }
+    
+    
+    
+    for(int i=0; i<=1000; i++){
+        for(int j=0; j<=1000; j++){
+        
+            if(check[i][j] == false && vt[i][j].size() != 0){
             
-            if(input == 0){
+                DFS(i, j);
+                cnt++;
                 
-                /*
-                 0-> 9로 바꾸면 123456789 항상 9자리가 만들어지기 때문에
-                 편의상 바꿔준다
-                 */
-                input = 9;
             }
             
-            arrNum =  (arrNum *10) + input ;
         }
     }
     
-    BFS(arrNum);
+    // 거북이의 출발점에서부터 줄을 그을 수 있는 경우
+    if( vt[sx][sy].size() != 0){
+        cnt -= 1;
     
-
-
-
-
-
+    }
+    
+    cout << cnt;
+    
+    
+    
 
     return 0;
 }
