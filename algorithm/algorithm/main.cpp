@@ -1,83 +1,73 @@
 #include <iostream>
 #include <cstring>
-#include <vector>
 #include <algorithm>
-#include <cmath>
 
 using namespace std;
 
+int N;
+int arr[22][22];
+bool number[101];
 
-int arr[17][17];
-bool check[17];
-int N, minNum ;
+// 오른쪽 아래 - 왼쪽 아래 - 왼쪽 위 - 오른쪽 위
+int dx[] = {1, 1, -1, -1};
+int dy[] = {1, -1, -1, 1};
+int ans ,maxCnt;
 
-//  요리 그룹의 최대 시너지 값 계산
-int cal(vector<int> &a){
+
+void DFS(int x, int y, int sx, int sy, int dir ){
     
-    int sum = 0;
+    // 방향 도착
+    if(dir == 4){
     
-    // 모든 경우의 수 중, 절반만 확인하면 되기 떄문에
-    // ex) 1 3 = 3 1
-    for(int i=0; i< N/2; i++){
-        for(int j=0; j<N/2; j++){
-        
-            if(i==j) continue;
+        if(x == sx && y == sy){
+           
+            ans = 0;
+            for(int i=0; i<101; i++){
+                
+                if(number[i]== true){
+                    ans += 1;
+                }
+            }
+            maxCnt = max(maxCnt, ans);
             
-            sum += arr[a[i]][a[j]];
+            return;
+            
         }
     }
     
-    return sum;
     
-
-}
-
-// 두 요리 그룹으로 나누는 작업
-// 절반만 선택하면 나머지는 다른 그룹이기때문에
-// 한가지로만 확인해준다
-int divideGroup(){
-
-    vector<int> v1, v2;
+    int nx = x + dx[dir];
+    int ny = y + dy[dir];
     
-    for(int i=0; i< N; i++){
-        
-        if(check[i] == true){
-            v1.push_back(i);
+    // 범위 초과
+    if(nx <0 || ny < 0 || nx >= N || ny >= N) return;
+    else{
+    
+        // 처음 방문하는 디저트 카페 집이라면
+        if(number[arr[nx][ny]] == false){
+            
+            number[arr[nx][ny]] = true;
+            
+            // 이 방향 그대로 하는 경우
+            DFS(nx, ny, sx, sy, dir);
+            
+            // 방향을 바꿔서 탐색해보는 경우
+            DFS(nx, ny, sx, sy, dir+1);
+            
+            /* 백 트 래 킹 */
+            number[arr[nx][ny]] = false;
+            
+            
         }
         else{
-            v2.push_back(i);
+            // 방문 했지만, 다음 방향으로 돌려서 탐색하는 경우
+            /* 다른 경우로 재 탐색 하는 경우, "처음" 좌표에서 가는 것   */
+            DFS(x, y, sx, sy, dir+1);
         }
+
     }
-
-    return abs(cal(v1) - cal(v2));
-
 }
 
-// 백트래킹
-void checkGroup(int cnt, int num){
-
-    check[num] = true;
-    
-    if(cnt == N/2){
-        
-        // 계산
-        minNum = min(minNum, divideGroup());
-    
-    }
-    else{
-        
-        for(int i=num+1; i<N; i++){
-            checkGroup(cnt+1, i);
-        }
-    
-    }
-    
-    // 백트래킹사용시 필수!
-    check[num] = false;
-
-
-
-}
 
 
 int main(){
@@ -86,28 +76,43 @@ int main(){
     
     cin >> testCase;
     
-    for(int t= 1; t<= testCase; t++){
+    for(int t=1; t<= testCase; t++){
+    
         cin >> N;
         
-        minNum = 1000000;
+        
         
         for(int i=0; i<N; i++){
-            for(int j=0; j<N; j++){
-                cin >> arr[i][j];
+            for(int j=0; j<N ; j++){
+                cin>> arr[i][j];
+                
             }
         }
         
-        checkGroup(1, 0);
+        // 백트래킹
+        for(int i=0; i<N-1; i++){
+            for(int j=1; j<N-1; j++){
+                
+                number[arr[i][j]] = true;
+                DFS(i, j, i+1, j-1, 0);
+                number[arr[i][j]] = false;
+            
+            }
+        }
+
+        if(maxCnt == 0) maxCnt = -1;
         
-        cout << "#" << t << ' ' << minNum <<'\n';
+        cout << "#" << t << ' ' << maxCnt <<'\n';
         
-        
+        ans = 0;
+        maxCnt = 0;
+        memset(number, false, sizeof(number));
         
     }
 
-    
+
+
+
+
     return 0;
 }
-
-
-
