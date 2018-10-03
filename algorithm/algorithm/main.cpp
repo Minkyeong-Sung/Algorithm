@@ -1,68 +1,83 @@
 #include <iostream>
-#include <queue>
 #include <cstring>
-#include <utility>
+#include <vector>
 #include <algorithm>
+#include <cmath>
 
 using namespace std;
 
-int map[10][10];
-bool check[10][10];
-int N, K, maxRoad = 0;
 
-int dx[] = {-1, 1, 0, 0};
-int dy[] = {0, 0, -1, 1};
+int arr[17][17];
+bool check[17];
+int N, minNum ;
 
-
-// flag : 산을 깎는 여부 (T : 깍을 수 있다 , F : 깎을 수 없다 (이미 깎았다))
-void DFS(int x, int y, bool flag, int cnt){
+//  요리 그룹의 최대 시너지 값 계산
+int cal(vector<int> &a){
     
-    check[x][y] = true;
+    int sum = 0;
     
-    for(int i=0; i<4; i++){
+    // 모든 경우의 수 중, 절반만 확인하면 되기 떄문에
+    // ex) 1 3 = 3 1
+    for(int i=0; i< N/2; i++){
+        for(int j=0; j<N/2; j++){
         
-        int nx = x + dx[i];
-        int ny = y + dy[i];
-        
-        // 범위를 벗어난 경우
-        if(nx < 0  || ny < 0 || nx >= N || ny >= N) continue;
-        if(check[nx][ny] == true) continue;
-        
-     
-        // 높 -> 낮 이면 그대로 탐색 진행
-        if(map[x][y] > map[nx][ny]){
+            if(i==j) continue;
             
-            DFS(nx, ny, flag, cnt+1);
-            
-            // 빠져 나온 후, 백트레킹을 위해
-            check[nx][ny] = false;
-        }
-        // 깎을 수 있는 경우
-        else if(map[x][y] <= map[nx][ny] && flag != true){
-        
-            // 최대 K 깊이 만큼 산을 깎아본다
-            for(int j=1; j<=K; j++){
-                
-                if(map[nx][ny] - j < map[x][y]){
-                
-                    map[nx][ny] -= j;
-                    flag = true;
-                    
-                    DFS(nx, ny, flag, cnt+1);
-                
-                    map[nx][ny] += j;
-                    check[nx][ny] = false;
-                    flag = false;
-                }
-            }
-        }
-        
-        if(cnt > maxRoad){
-            maxRoad = cnt ;
+            sum += arr[a[i]][a[j]];
         }
     }
+    
+    return sum;
+    
+
 }
 
+// 두 요리 그룹으로 나누는 작업
+// 절반만 선택하면 나머지는 다른 그룹이기때문에
+// 한가지로만 확인해준다
+int divideGroup(){
+
+    vector<int> v1, v2;
+    
+    for(int i=0; i< N; i++){
+        
+        if(check[i] == true){
+            v1.push_back(i);
+        }
+        else{
+            v2.push_back(i);
+        }
+    }
+
+    return abs(cal(v1) - cal(v2));
+
+}
+
+// 백트래킹
+void checkGroup(int cnt, int num){
+
+    check[num] = true;
+    
+    if(cnt == N/2){
+        
+        // 계산
+        minNum = min(minNum, divideGroup());
+    
+    }
+    else{
+        
+        for(int i=num+1; i<N; i++){
+            checkGroup(cnt+1, i);
+        }
+    
+    }
+    
+    // 백트래킹사용시 필수!
+    check[num] = false;
+
+
+
+}
 
 
 int main(){
@@ -71,60 +86,28 @@ int main(){
     
     cin >> testCase;
     
-    for(int t=1; t<= testCase; t++){
+    for(int t= 1; t<= testCase; t++){
+        cin >> N;
         
-        // input
-        cin >> N >> K;
-        maxRoad = 0;
-        
-        queue<pair<int, int>> q;
-        int maxI=0;
+        minNum = 1000000;
         
         for(int i=0; i<N; i++){
             for(int j=0; j<N; j++){
-                cin >> map[i][j];
-            
-                if(maxI < map[i][j]){
-                    maxI = map[i][j];
-                }
+                cin >> arr[i][j];
             }
         }
         
-        // 가장 높은 곳 저장
-        // 이 지점을 기준으로 DFS 탐색
-        for(int i=0; i<N; i++){
-            for(int j=0; j<N; j++){
-                
-                if(maxI == map[i][j] ){
-                    q.push(make_pair(i, j));
-                }
-            }
-        }
+        checkGroup(1, 0);
+        
+        cout << "#" << t << ' ' << minNum <<'\n';
         
         
         
-        // DFS 탐색 시작
-        
-        while(!q.empty()){
-            
-            // init
-            memset(check, false, sizeof(check));
-            
-            // 시작점부터 카운트를 하기떄문
-            DFS(q.front().first, q.front().second, false, 1);
-            q.pop();
-            
-        }
-        
-        cout << "#" << t <<  ' ' << maxRoad  <<'\n';
-        
-        
-    
     }
 
+    
     return 0;
 }
-
 
 
 

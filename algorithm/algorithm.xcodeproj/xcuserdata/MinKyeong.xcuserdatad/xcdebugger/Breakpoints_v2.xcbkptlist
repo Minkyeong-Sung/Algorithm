@@ -10,13 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "algorithm/main.cpp"
-            timestampString = "560145769.788834"
+            timestampString = "560234365.613216"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1006"
-            endingLineNumber = "1006"
-            landmarkName = "main()"
-            landmarkType = "9">
+            startingLineNumber = "955"
+            endingLineNumber = "955">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -26,13 +24,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "algorithm/main.cpp"
-            timestampString = "560145769.788834"
+            timestampString = "560234365.613216"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1007"
-            endingLineNumber = "1007"
-            landmarkName = "main()"
-            landmarkType = "9">
+            startingLineNumber = "956"
+            endingLineNumber = "956">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -42,13 +38,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "algorithm/main.cpp"
-            timestampString = "560145769.788834"
+            timestampString = "560234365.613216"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "795"
-            endingLineNumber = "795"
-            landmarkName = "main()"
-            landmarkType = "9">
+            startingLineNumber = "744"
+            endingLineNumber = "744">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -58,28 +52,26 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "algorithm/main.cpp"
-            timestampString = "560145769.788834"
+            timestampString = "560234365.613216"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "797"
-            endingLineNumber = "797"
-            landmarkName = "main()"
-            landmarkType = "9">
+            startingLineNumber = "746"
+            endingLineNumber = "746">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "algorithm/main.cpp"
-            timestampString = "560145767.134528"
+            timestampString = "560234364.008781"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "104"
-            endingLineNumber = "104"
-            landmarkName = "main()"
+            startingLineNumber = "38"
+            endingLineNumber = "38"
+            landmarkName = "divideGroup()"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
