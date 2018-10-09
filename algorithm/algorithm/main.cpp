@@ -1,170 +1,84 @@
 #include <iostream>
-#include <cstring>
-#include <queue>
+#include <cmath>
+#include <vector>
 #include <algorithm>
 
 using namespace std;
 
-int N, W, H;
-int ans = 987654321;
-int arr[15][12];
+int N, K;
+int digit[29];
+vector<int> vt;
 
-int dx[] = {-1, 1, 0, 0};
-int dy[] = {0, 0, -1, 1};
-
-struct Node{
-
-    int x;
-    int y;
-    int depth;
-};
-
-void breakBlock(int x, int y, int depth){
-
-    queue<Node> q;
-    q.push({x, y, depth});
-    arr[x][y] = 0;
+void rotation(){
     
-    while(!q.empty()){
-        
-        int tx = q.front().x;
-        int ty = q.front().y;
-        int td = q.front().depth;
-        q.pop();
-        
-        /*  여기서 깊이만큼 한번에 탐색 가능! */
-        for(int i=1; i<td; i++){
-            for(int d=0; d<4; d++){
-                
-                // 배열에 저장된 깊이만큼 바로 이동한지 탐색!
-                int nx = tx + dx[d]*i;
-                int ny = ty + dy[d]*i;
-                int nd = arr[nx][ny];
-                
-                if(nx < 0 || ny < 0 || nx >= H || ny >= W) continue;
-                
-                if(arr[nx][ny] !=0){
-                    q.push({nx, ny, nd});
-                    arr[nx][ny] = 0;
-                }
-            }
-        
-        }
+    int tmp = digit[N-1];
+    
+    for(int i= N-1; i>0 ; i--){
+        digit[i] = digit[i-1];
     }
+    digit[0] = tmp;
 }
 
-void moveBlock(){
-
-    for(int i=0; i<W; i++){
+void calculate(){
     
-        for(int j= H-2; j>= 0; j--){
+    for(int i=0; i<N; i+= N/4){
+        int tmp = 0;
+        int l = 0;
         
-            int x = j;
-            int y = i;
-            
-            if(arr[x][y] == 0) continue;
-            
-            while(1){
-                
-                // 아래서 부터 거꾸로 비교!
-                if(arr[x+1][y] == 0 && x+1 >= 0 && y >= 0 && x+1 < H && y <= W){
-                 
-                    arr[x+1][y] = arr[x][y];
-                    arr[x][y] = 0;
-                    x++;
-                }else{
-                    break;
-                }
-            }
+        for(int j=i; j< i+ N/4; j++){
+            tmp += digit[j] * pow(16, (N/4) -1 - l);
+            l++;
         }
-    }
-}
-
-void solve(int k){
-    
-    int tmp[15][12];
-    
-    // 백트래킹!
-    for(int j=0; j<H; j++){
-        for(int l = 0; l<W; l++){
-            tmp[j][l] = arr[j][l];
-        }
+        
+        vt.push_back(tmp);
     }
     
-    
-    if(k == N){
-    
-        int cnt = 0;
-        
-        for(int i=0; i< H; i++){
-            for(int j=0; j<W; j++){
-                
-                if(arr[i][j] != 0){
-                    cnt += 1;
-                }
-            }
-        }
-        
-        ans = min(ans, cnt);
-    
-        return;
-    }
-    
-    
-    // 구술 차는 경우의 수
-    for(int i=0; i<W; i++){
-        
-        int x = 0;
-        int y = i;
-        
-        // 제일 위에 있는 구술 찾기
-        while(x>= 0 && y>= 0 && x < H && y < W && arr[x][y] == 0){
-            x++;
-        }
-        
-        // 구술 치기 시작!
-        breakBlock(x, y, arr[x][y]);
-    
-        moveBlock();
-        
-        solve(k+1);
-        
-        // 백트래킹!
-        for(int j=0; j<H; j++){
-            for(int l = 0; l<W; l++){
-                arr[j][l] = tmp[j][l];
-            }
-        }
-        
-    }
-    
-    
-
 }
 
 int main(){
     
     int tc;
+    string input;
     
     cin >> tc;
     
     for(int t=1; t<= tc; t++){
-        cin >> N >> W >> H;
+        cin >> N >> K;
+        cin >> input;
         
-        ans = 987654321;
-        
-        for(int i=0; i<H; i++){
-            for(int j=0; j<W; j++){
-                cin >> arr[i][j];
+        // 숫자로 변환
+        for(int i=0; i<N; i++){
+            
+            if(input[i] <'A'){
+                digit[i] = input[i] - '0';
+            }
+            else{
+                digit[i] = input[i] - 'A' + 10;
             }
         }
         
-        solve(0);
+        // 한 변의 길이만큼 회전
+        for(int i=0; i<N/4; i++){
+            rotation();
+            calculate();
+        }
         
-        cout << "#" << t << ' ' << ans <<'\n';
+        // 내림차순 정렬
+        sort(vt.begin(), vt.end(), greater<int>());
+        
+        /* 중복되는 수가 있으면, 그 해당 수만큼 늘리기
+         단, 전체 반복문은 찾는 인덱스까지로 설정하고 돌릴 것!!
+         왜냐면, 그 이후의 수들까지 카운트를 해버리면 오류 발생 ** */
+        for(int i=0; i<K; i++){
+            
+            if(i >= 0 && vt[i] == vt[i-1]){
+                K++;
+            }
+        }
+        
+        cout << "#" << t << ' ' << vt[K-1] <<'\n';
+        
+        vt.clear();
     }
-
-
-
     return 0;
 }
