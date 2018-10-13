@@ -1,109 +1,104 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
-#include <cmath>
+#include <cstring>
 
 using namespace std;
 
-int D, W, K;
-
-int arr[13][20];
-int ans = 987654321;
-
-bool checkFilm(){
+typedef struct{
+    int x;
+    int y;
+    int d;
+    int e;
     
-    for(int i=0; i<W; i++){ // 열
+} Node;
 
-        int check = 0;
+int arr[4001][4001];
+int check[4001][4001];
+vector<Node> ball;
+
+int dx[] = { 0 , 0, -1, 1};
+int dy[] = {1, -1, 0, 0};
+int N, ans = 0;
+
+void solve(){
+    
+    // 1개만 남았을 때는 더이상 변화 없다
+    while( ball.size() >2){
         
-        for(int j=1; j<D; j++){ // 행
+        // 움직이기
+        for(int i=0; i< ball.size(); ){
             
-            if(arr[j][i] == arr[j-1][i]){
-                check += 1;
+            // 원래 있던 자리는 아웃
+            check[ball[i].y][ball[i].x] -=1;
+            
+            ball[i].x += dx[ball[i].d];
+            ball[i].y += dy[ball[i].d];
+            
+            // overflow
+            // 초과하면 더이상 고려하지 않는다
+            if(ball[i].x < 0 || ball[i].y < 0 ||  ball[i].x >= 4000 || ball[i].y >= 4000){
+                ball.erase(ball.begin()+ i);
+               // i--;
             }
             else{
-                check = 0;
-            }
-            
-            // 만족하므로 더 탐색할 필요없다
-            if(check >= K-1){
-                break;
+                check[ball[i].y][ball[i].x] += 1;
+                i+= 1;
             }
         }
         
-        if(check < K-1 ){
-            return false;
+        // 충돌위치 확인
+        vector<pair<int, int>> vt;
+        for(int i=0; i<ball.size(); ){
+            
+            if(check[ball[i].y][ball[i].x] >=2){
+            
+                ans += ball[i].e;
+                // 충돌 처리 완료 한 후
+                vt.push_back({ball[i].x, ball[i].y});
+                ball.erase(ball.begin()+i);
+               // i--;
+            }
+            else{
+                i++;
+            }
         }
-    }
-    
-    return true;
-}
-
-void solve(int depth, int cnt){
-    
-    // 현재 답보다 더 큰 경우라면, 더 탐색할 필요가 없음
-    if(cnt >= ans){
-        return;
-    }
-    
-    // 종료조건1 : 마지막 행까지 본경우 종료
-    if(depth == D ){
-    
-        if(checkFilm()== true){
-            ans = min(cnt, ans);
+       
+        for(int i=0; i< vt.size(); i++){
+            check[vt[i].second][vt[i].first] = 0;
         }
-        return;
+        
     }
-    
-    int copyArr[20] = {0};
-    
-    // 아무것도 하지 않는 경우
-    solve(depth+1, cnt);
-    
-    // 0 투입하는 경우
-    // 초기 상태 저장
-    // 그 후, 해당 행을 약품 투입한 것으로 변경
-    for(int i=0; i<W; i++){
-        copyArr[i] = arr[depth][i];
-        arr[depth][i] = 0;
-    }
-    
-    solve(depth+1, cnt+1);
-    
-    // 1 투입하는 경우
-    // 그 후, 해당 행을 약품 투입한 것으로 변경
-    for(int i=0; i<W; i++){
-        arr[depth][i] = 1;
-    }
-    solve(depth+1, cnt+1);
-    
-    // 백트래킹
-    // 원상 복구
-    for(int i=0; i<W; i++){
-        arr[depth][i] = copyArr[i];
-    }
-    
 }
 
 int main(){
+    
     int tc;
+    int x, y, d, e;
     cin >> tc;
     
-    for(int t=1; t<= tc; t++){
+    for (int t=1; t<= tc; t++) {
+        cin >> N;
         
-        cin >> D >> W >> K;
         
-        for(int i=0; i<D; i++){
-            for(int j=0; j<W; j++){
-                cin >> arr[i][j];
-            }
+        ans = 0;
+        memset(check,0,sizeof(check));
+        
+        for(int i=0; i<N; i++){
+            cin >> x >> y >> d >> e;
+            
+            x = (x+1000)*2;
+            y = (y+1000)*2;
+            
+            ball.push_back({x, y, d, e});
+            check[y][x] = 1;
         }
+    
+        solve();
+       
         
-        ans = 987654321;
-        solve(0, 0);
-        
-        cout << "#" << t << ' ' << ans <<'\n';
+        cout <<"#" << t << ' ' << ans <<'\n';
     }
+    
     
     return 0;
 }
