@@ -5,113 +5,118 @@
 
 using namespace std;
 
-int N, M, K;
+int N;
+int ans;
+int arr[115][115];
 
-int dx[] = {-1, 1, 0, 0};
-int dy[] = {0, 0, -1, 1};
+// 동 서 남 북
+// 0 1 2 3
+int dx[] = {1, -1, 0, 0};
+int dy[] = {0, 0, 1, -1};
 
-typedef struct{
-    int data;
-    int start_t;
-    int end_t;
-    int state; // -1(죽음) 0(아무것도 없음) 1(비활성) 2(활성)
-    int input_t;
-}Node;
-
-int ans = 0;
-Node arr[352][352];
-
-void solve(){
+// 도형에 따른 방향 전환
+int changeDir[6][4]= {
     
-    // 주어진 시간동안만 진행한다
-    for(int T=1; T<=K; T++){
-        
-        for(int i=0 ; i < K + N; i++){
-            for(int j= 0 ; j <K + M; j++){
-                
-                if(arr[i][j].data == 0) continue;
-                
-                // 활성화 상태도 바꾸기
-                if(arr[i][j].start_t == T){
-                    arr[i][j].state = 2;
-                }
-                
-                // t초 시간 후 활성
-                if(arr[i][j].state == 2 && arr[i][j].start_t == T-1){
-                    
-                    for(int d=0; d<4; d++){
-                        
-                        int nx = i + dx[d];
-                        int ny = j + dy[d];
-                        
-                        // 원래 빈 공간으로 확장하거나
-                        // t초가 지났을때 증식하는 경우
-                        if(arr[nx][ny].state == 0 || (arr[nx][ny].state == 1 && arr[nx][ny].input_t == T && arr[nx][ny].data < arr[i][j].data)){
-                            
-                            arr[nx][ny].start_t = arr[i][j].data + T;
-                            arr[nx][ny].end_t = arr[i][j].data * 2 + T;
-                            arr[nx][ny].data = arr[i][j].data;
-                            arr[nx][ny].state = 1;
-                            arr[nx][ny].input_t = T;
-                        }
-                    }
-                }
-                
-                // 죽은 시간일때
-                if(arr[i][j].state == 2 && arr[i][j].end_t == T){
-                    arr[i][j].state = -1;
-                }
+    {0, 1, 2, 3},
+    {1, 3, 0, 2},
+    {1, 2, 3, 0},
+    {2, 0, 3, 1},
+    {3, 0, 1, 2},
+    {1, 0, 3, 2}
+};
+
+void findPare(int &y, int &x, int number){
+    
+    for(int i=1; i<= N; i++){
+        for(int j=1; j<=N; j++){
+            
+            if(arr[i][j] == number && ( j != x || i != y)){
+                x = j;
+                y = i;
+                return;
             }
         }
-        // t초 경과
-        /*
-         cout << T << "초" << '\n';
-         for(int i=0 ; i < K + N; i++){
-         for(int j= 0 ; j <K + M; j++){
-         cout << arr[i][j].data << ' ';
-         }
-         cout <<'\n';
-         }*/
+    }
+}
+
+void DFS(int y, int x, int dir){
+    
+    int tx = x;
+    int ty = y;
+    int cnt = 0;
+    
+    while(1){
+        
+        int nx = tx + dx[dir];
+        int ny = ty + dy[dir];
+        
+      //  if(nx < 0 || ny < 0 || nx >= N || ny >= N) continue;
+        
+        // 블랙홀이거나 시작점으로 올 경우 종료
+        if(arr[ny][nx] == -1 || (nx == x && ny == y)){
+            if(ans < cnt){
+                ans = cnt;
+            }
+            return ;
+        }
+        
+        if(arr[ny][nx] > 0){
+            // 블록인 경우
+            if(arr[ny][nx] <= 5){
+                // 방향 갱신
+                dir = changeDir[arr[ny][nx]][dir];
+                cnt++;
+            }
+            // 웜홀인 경우
+            else{
+                int number = arr[ny][nx];
+                // 해당 좌표로 웜홀 이동
+                
+                findPare(ny, nx, number);
+            }
+        }
+        
+        // 위의 두가지 케이스에 해당되지 않으면 다음 좌표로 이동
+        tx = nx;
+        ty = ny;
+        
     }
 }
 
 
 int main(){
     
-    int tc, input;
+    int tc;
     cin >> tc;
     for(int t=1; t<= tc; t++){
-        cin >> N >> M >> K;
-        
-        // init
+      
         ans = 0;
+        cin >> N;
         
-        for(int i= K/2;  i< K/2 + N; i++){
-            for(int j= K/2; j <K/2 + M; j++){
-                cin >> input;
-                
-                if(input != 0){
-                    arr[i][j].data = input;
-                    arr[i][j].start_t = input;
-                    arr[i][j].end_t = 2*input;
-                    arr[i][j].state = 1;
-                }
+        for(int i=1; i<=N; i++){
+            for(int j=1; j<=N; j++){
+                cin >> arr[i][j];
             }
         }
         
-        solve();
+        // 가장자리에 벽 설치
+        // 반대방향으로 튕겨나가기 때문
+        for(int i=0; i<=N+1;i++){
+            arr[0][i] = 5;
+            arr[i][0] = 5;
+            arr[N+1][i] = 5;
+            arr[i][N+1] = 5;
+        }
         
-        for(int i=0; i< N+K; i++){
-            for(int j=0; j<M+K; j++){
+        for(int i=1; i<=N; i++){
+            for(int j=1; j<=N; j++){
                 
-                if(arr[i][j].state == 1 || arr[i][j].state == 2){
-                    ans+=1;
+                if(arr[i][j]!= 0) continue;
+                
+                // 4가지 방향에 따라 모두 검색
+                for(int d=0; d<4; d++){
+                    DFS(i, j, d);
                 }
-                arr[i][j].data =0;
-                arr[i][j].end_t = 0;
-                arr[i][j].state = 0;
-                arr[i][j].start_t = 0;
-                arr[i][j].input_t = 0;
             }
         }
         
