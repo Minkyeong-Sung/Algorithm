@@ -1,126 +1,94 @@
 #include <iostream>
 #include <queue>
-#include <algorithm>
-#include <cstring>
 #include <utility>
+#include <vector>
 
 using namespace std;
 
-int N, M;
-int arr[8][8];
-int cpyArr[8][8];
-int ans = 0;
+int N, K, L;
+int arr[102][102];
+vector<pair<int, int>> snake;
+queue<pair<int, char>> q;
 
-int dx[] = {-1, 1, 0, 0};
-int dy[] = {0, 0, -1, 1};
+int dir = 1;
 
-void copyArr(int (*a)[8], int (*b)[8]){
+// 상 우 하 좌
+int dx[] = {-1, 0, 1, 0};
+int dy[] = {0, 1, 0, -1};
+
+void changeDir(char d){
     
-    for(int i=0; i<N; i++){
-        for(int j=0; j<M; j++){
-            a[i][j] = b[i][j];
-        }
+    if(d == 'L'){
+        dir = (dir + 3)%4;
+    }
+    else{
+        dir = (dir + 1 ) %4;
     }
 }
 
-// BFS
-void Virus(){
+void findsnakeTime(){
     
-    int virusArr[8][8];
-    queue<pair<int,int>> q;
-    copyArr(virusArr, cpyArr);
+    int t = 0;
     
-    // 바이러스 저장 후 퍼트릴 예정
-    for(int i=0; i<N; i++){
-        for(int j=0; j<M; j++){
-            
-            if(virusArr[i][j] ==2){
-                q.push(make_pair(i, j));
+    while(1){
+        // 방향 전환
+        if(!q.empty()){
+            if(q.front().first == t){
+                changeDir(q.front().second);
+                q.pop();
             }
         }
-    }
-    
-    while(!q.empty()){
+        int nx = snake[snake.size()-1].first + dx[dir];
+        int ny = snake[snake.size()-1].second + dy[dir];
         
-        int tx = q.front().first;
-        int ty = q.front().second;
-        q.pop();
+        t++;
         
-        for(int d=0; d<4; d++){
-            int nx = tx + dx[d];
-            int ny = ty + dy[d];
-            
-            if(nx < 0 || ny < 0 || nx >= N || ny >= M) continue;
-            
-            if(virusArr[nx][ny] == 0){
-                virusArr[nx][ny] = 2;
-                q.push({nx, ny});
-            }
+        // 벽에 부딪히거나, 자시자신과 부딪히면 종료
+        if((nx <1 || ny < 1 || nx > N || ny > N) || arr[nx][ny] == 1){
+            cout << t ;
+            return;
         }
-    }
-    
-    int cnt = 0;
-    
-    for(int i=0; i<N; i++){
-        for(int j=0; j<M; j++){
+        
+        // 사과가 없다면 꼬리 줄이기
+        if(arr[nx][ny] != 2){
             
-            if(virusArr[i][j] == 0){
-                cnt += 1;
-            }
+            // 벡터의 가장 처음이 뱀의 꼬리를 나타내므로 없애주기
+            arr[snake[0].first][snake[0].second] = 0;
+            snake.erase(snake.begin());
         }
-    }
-    
-    ans = max(cnt, ans);
-    return;
-}
-
-void makeWall(int cnt){
-    
-    if(cnt == 3){
-        Virus();
-        return;
-    }
-    
-    // 벽을 만드는 경우
-    for(int i=0; i<N; i++){
-        for(int j=0; j<M; j++){
-            
-            if(cpyArr[i][j] == 0){
-                
-                cpyArr[i][j] = 1;
-                makeWall(cnt+1);
-                cpyArr[i][j] = 0;
-            }
-        }
+        
+        snake.push_back({nx, ny});
+        arr[nx][ny] = 1;
+        
     }
 }
 
 int main(){
+    int x, y, t;
+    char dir;
     
-    cin >> N >> M;
-    
-    for(int i=0; i<N; i++){
-        for(int j=0; j<M;  j++){
-            cin >>arr[i][j];
-        }
+    cin >> N;
+    cin >> K;
+    for(int i=0; i<K; i++){
+        cin >> x>> y;
+        // 사과
+        arr[x][y] = 2;
     }
     
-    // 벽을 세울 위치
-    for(int i=0; i<N; i++){
-        for(int j=0; j<M; j++){
-            
-            if(arr[i][j] == 0){
-                copyArr(cpyArr, arr);
-                // 벽 세우고
-                cpyArr[i][j] =1;
-                makeWall(1);
-                // 다시 원상 복구
-                cpyArr[i][j] = 0;
-            }
-        }
+    cin >> L;
+    for(int i=0; i<L; i++){
+        cin >> t >> dir;
+        
+        q.push({t, dir});
     }
     
-    cout << ans ;
+    // 뱀 표시
+    snake.push_back({1,1});
+    //snake.push_back({1,2});
+    arr[1][1] = 1; //arr[1][2] = 1;
+    
+    findsnakeTime();
+
     
     return 0;
 }
