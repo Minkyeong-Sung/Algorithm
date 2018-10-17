@@ -1,237 +1,100 @@
 #include <iostream>
-#include <vector>
 #include <algorithm>
 
 using namespace std;
 
-int N, M;
+int arr[11][11];
+bool check[11][11];
+int N;
 int ans = 987654321;
-vector<pair<int, int>> vt;
 
-void upArr(int (*cpyArr)[8], int x, int y, int n){
-    
-    for(int i=x-1; i >=0; i--){
-        if(cpyArr[i][y] == 6) break;
-        if(cpyArr[i][y] >= 1 && cpyArr[i][y] <= 5) continue;
-        cpyArr[i][y] = n;
-    
-    }
-}
+int dx[] = {-1, 1, 0, 0};
+int dy[] = {0, 0, -1, 1};
 
-void downArr(int (*cpyArr)[8], int x, int y, int n){
-    
-    for(int i=x+1; i < N; i++){
-        if(cpyArr[i][y] == 6) break;
-        if(cpyArr[i][y] >= 1 && cpyArr[i][y] <= 5) continue;
-        cpyArr[i][y] = n;
-
-    }
-}
-
-void leftArr(int (*cpyArr)[8], int x, int y, int n){
-    
-    for(int i=y-1; i >=0 ; i--){
-        if(cpyArr[x][i] == 6) break;
-        if(cpyArr[x][i] >= 1 && cpyArr[x][i] <= 5) continue;
-        
-        cpyArr[x][i] = n;
-        
-    }
-}
-
-void rightArr(int (*cpyArr)[8], int x, int y, int n){
-    
-    for(int i=y+1; i < M ; i++){
-        if(cpyArr[x][i] == 6) break;
-        if(cpyArr[x][i] >= 1 && cpyArr[x][i] <= 5) continue;
-        
-        cpyArr[x][i] = n;
-        
-    }
-}
-
-void copyarr(int (*a)[8], int (*b)[8]){
-    
+int calculation(){
+    int sum =0;
     for(int i=0; i<N; i++){
-        for(int j=0; j<M; j++){
-            a[i][j] = b[i][j];
-        }
-    }
-}
-
-int calculation(int (*a)[8]){
-    int cnt = 0;
-    
-    for(int i=0; i<N; i++){
-        for(int j=0; j<M; j++){
-            //cout << a[i][j] << ' ';
-            if(a[i][j] == 0){
-                cnt+=1;
+        for(int j=0; j<N; j++){
+            if(check[i][j] == true){
+                sum += arr[i][j];
             }
         }
-        //cout <<'\n';
     }
-    return cnt;
+    
+    return sum;
 }
 
 
-void solve(int (*arr)[8], int (*cpyArr)[8], int idx){
+void solve(int x, int y, int cnt){
     
-    if(idx == vt.size()){
-        ans = min(ans, calculation(cpyArr));
-        
-     //   cout <<"\n";
+    if(cnt == 3){
+        // 계산해서 최소값 갱신
+        ans = min(ans, calculation());
         return;
     }
     
-    int tmp[8][8];
+    if(x >= N || y >= N) return;
     
-    
-    if(idx> vt.size()) return;
-    
-    int i = vt[idx].first;
-    int j = vt[idx].second;
-    
-    if(arr[i][j] == 1 ){
-        // 상
-        /*   백 트레킹   */
-        /* 실행하기 전값을 저장해두고, 함수 종료후, 그 이전값을 다시 적용하기 */
-        copyarr(tmp, cpyArr);
-        upArr(cpyArr, i, j, -1);
-        
-        solve(arr, cpyArr, idx+1);
-        
-        copyarr(cpyArr, tmp);
-        
-        // 하
-        downArr(cpyArr, i, j, -1);
-    
-        solve(arr, cpyArr, idx+1);
-        copyarr(cpyArr, tmp);
-        
-        // 좌
-        leftArr(cpyArr, i, j, -1);
-
-        solve(arr, cpyArr, idx+1);
-        copyarr(cpyArr, tmp);
-        
-        // 우
-        rightArr(cpyArr, i, j, -1);
-    
-        solve(arr, cpyArr, idx+1);
-        copyarr(cpyArr, tmp);
-        
-    }
-    else if(cpyArr[i][j] == 2){
-        copyarr(tmp, cpyArr);
-        upArr(cpyArr, i, j, -1);
-        downArr(cpyArr, i, j, -1);
-        
-        solve(arr, cpyArr, idx+1);
-        copyarr(cpyArr, tmp);
-        
-        leftArr(cpyArr, i, j , -1);
-        rightArr(cpyArr, i, j, -1);
-        
-        solve(arr, cpyArr, idx + 1);
-        
-        copyarr(cpyArr, tmp);
-
-        
-    }
-    else if(arr[i][j] == 3){
-        copyarr(tmp, cpyArr);
-        upArr(cpyArr, i, j, -1);
-        rightArr(cpyArr, i, j, -1);
-        
-        
-        solve(arr, cpyArr, idx + 1);
-        
-        copyarr(cpyArr, tmp);
-        
-        
-        leftArr(cpyArr, i, j, -1);
-        upArr(cpyArr, i, j, -1);
-        
-        solve(arr, cpyArr, idx+1);
-        copyarr(cpyArr, tmp);
-        
-        leftArr(cpyArr, i, j, -1);
-        downArr(cpyArr, i, j, -1);
-        
-        solve(arr, cpyArr, idx+1);
-        copyarr(cpyArr, tmp);
-        
-        rightArr(cpyArr, i, j, -1);
-        downArr(cpyArr, i, j, -1);
-        
-        solve(arr, cpyArr, idx+1);
-        copyarr(cpyArr, tmp);
-        
-    }
-    else if(arr[i][j] == 4){
-        copyarr(tmp, cpyArr);
-        upArr(cpyArr, i, j, -1);
-        downArr(cpyArr, i, j, -1);
-        rightArr(cpyArr, i, j, -1);
-        
-        solve(arr, cpyArr, idx+1);
-        copyarr(cpyArr, tmp);
-        
-        upArr(cpyArr, i, j, -1);
-        downArr(cpyArr, i, j, -1);
-        leftArr(cpyArr, i, j, -1);
-        
-        solve(arr, cpyArr, idx+1);
-        copyarr(cpyArr, tmp);
-        
-        upArr(cpyArr, i, j, -1);
-        leftArr(cpyArr, i, j, -1);
-        rightArr(cpyArr, i, j, -1);
-        
-        solve(arr, cpyArr, idx+1);
-        copyarr(cpyArr, tmp);
-        
-        downArr(cpyArr, i, j, -1);
-        leftArr(cpyArr, i, j, -1);
-        rightArr(cpyArr, i, j, -1);
-        
-        solve(arr, cpyArr, idx+1);
-       copyarr(cpyArr, tmp);
-    }
-    else{
-        copyarr(tmp, cpyArr);
-        upArr(cpyArr, i, j, -1);
-        downArr(cpyArr, i, j, -1);
-        rightArr(cpyArr, i, j, -1);
-        leftArr(cpyArr, i, j, -1);
-        
-        solve(arr, cpyArr, idx+1);
-    }
-}
-
-
-int main(){
-    
-    int arr[8][8];
-    cin >> N >> M;
-    
-    for(int i=0; i<N; i++){
-        for(int j=0; j<M; j++){
-            cin >> arr[i][j];
+    for(int i=1; i<N-1; i++){
+        for(int j=1; j<N-1; j++){
             
-            if(arr[i][j] >= 1 && arr[i][j] <= 5){
-                vt.push_back({i, j});
+            if(check[i][j] == true){
+                continue;
             }
+            else{
+                // 꽃 만들수 있는지 확인하기
+                int flag = 0;
+                for(int d=0; d<4; d++){
+                    int nx = i + dx[d];
+                    int ny = j + dy[d];
+                    
+                    if(check[nx][ny] == true) break;
+                    flag++;
+                }
+                // 꽃 완성
+                if(flag == 4){
+                    for(int d=0; d<4; d++){
+                        int nx = i + dx[d];
+                        int ny = j + dy[d];
+                        
+                        check[nx][ny] = true;
+                    }
+                    check[i][j] = true;
+                    
+                    // 꽃 만들고
+                    solve(i, j, cnt+1);
+                    
+                    // 다시 해제하기
+                    for(int d=0; d<4; d++){
+                        int nx = i + dx[d];
+                        int ny = j + dy[d];
+                        
+                        check[nx][ny] = false;
+                    }
+                    check[i][j] = false;
+                }
+            }
+            
         }
     }
     
-    // copy
-    int cpyArr[8][8];
-    copyarr(cpyArr, arr);
     
-    solve(arr, cpyArr, 0);
+}
+
+int main(){
+    
+    
+    cin >> N;
+    
+    for(int i=0; i<N; i++){
+        for(int j=0; j<N; j++){
+            cin >> arr[i][j];
+        }
+    }
+    
+    solve(1, 1, 0);
     
     cout << ans ;
+    
     return 0;
 }
