@@ -1,100 +1,86 @@
 #include <iostream>
+#include <vector>
 #include <algorithm>
+#include <utility>
+#include <cmath>
 
 using namespace std;
 
-int arr[11][11];
-bool check[11][11];
-int N;
+int N, M;
+int arr[51][51];
+vector<pair<int, int>> vt;
+vector<pair<int, int>> home;
 int ans = 987654321;
 
-int dx[] = {-1, 1, 0, 0};
-int dy[] = {0, 0, -1, 1};
-
-int calculation(){
-    int sum =0;
-    for(int i=0; i<N; i++){
-        for(int j=0; j<N; j++){
-            if(check[i][j] == true){
-                sum += arr[i][j];
+int caculation(vector<pair<int, int>> ch){
+    
+    int sum = 0;
+    
+    for(int i=0; i< home.size(); i++){
+        int tmp = 10000000;
+        
+        for(int j=0; j<ch.size(); j++){
+            
+            int n = abs( home[i].first - ch[j].first) + abs(home[i].second - ch[j].second);
+            if(n < tmp){
+                tmp = n;
             }
         }
+        sum += tmp;
     }
     
     return sum;
 }
 
-
-void solve(int x, int y, int cnt){
+void solve(vector<pair<int, int>> ch, int idx, int cnt){
     
-    if(cnt == 3){
-        // 계산해서 최소값 갱신
-        ans = min(ans, calculation());
+    if(cnt == M){
+        // 계산
+        ans = min(ans, caculation(ch));
+        /*
+        for(int i=0; i< ch.size(); i++){
+            cout << ch[i].first << " " << ch[i].second <<"\n";
+        }
+         */
         return;
     }
     
-    if(x >= N || y >= N) return;
+    if(idx >= vt.size()) return;
     
-    for(int i=1; i<N-1; i++){
-        for(int j=1; j<N-1; j++){
-            
-            if(check[i][j] == true){
-                continue;
-            }
-            else{
-                // 꽃 만들수 있는지 확인하기
-                int flag = 0;
-                for(int d=0; d<4; d++){
-                    int nx = i + dx[d];
-                    int ny = j + dy[d];
-                    
-                    if(check[nx][ny] == true) break;
-                    flag++;
-                }
-                // 꽃 완성
-                if(flag == 4){
-                    for(int d=0; d<4; d++){
-                        int nx = i + dx[d];
-                        int ny = j + dy[d];
-                        
-                        check[nx][ny] = true;
-                    }
-                    check[i][j] = true;
-                    
-                    // 꽃 만들고
-                    solve(i, j, cnt+1);
-                    
-                    // 다시 해제하기
-                    for(int d=0; d<4; d++){
-                        int nx = i + dx[d];
-                        int ny = j + dy[d];
-                        
-                        check[nx][ny] = false;
-                    }
-                    check[i][j] = false;
-                }
-            }
-            
-        }
-    }
+    
+    // 뽑지 않는 경우
+    solve(ch, idx+1, cnt);
+    
+    // 뽑는 경우
+    ch.push_back({vt[idx].first, vt[idx].second});
+    solve(ch, idx+1, cnt+1);
+    ch.pop_back();
     
     
 }
 
 int main(){
     
+    cin >> N >> M;
     
-    cin >> N;
-    
-    for(int i=0; i<N; i++){
-        for(int j=0; j<N; j++){
+    for(int i=1; i<=N; i++){
+        for(int j=1; j<= N; j++){
             cin >> arr[i][j];
+            
+            if(arr[i][j] == 2){
+                vt.push_back({i, j});
+            }
+            if(arr[i][j] == 1){
+                home.push_back({i, j});
+            }
         }
     }
     
-    solve(1, 1, 0);
     
-    cout << ans ;
+    vector<pair<int, int>> chick;
+    solve(chick, 0, 0);
+    
+    cout << ans;
     
     return 0;
 }
